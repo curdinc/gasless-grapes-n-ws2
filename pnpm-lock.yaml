@@ -13,6 +13,7 @@ specifiers:
   '@types/react-dom': ^18.0.5
   '@typescript-eslint/eslint-plugin': ^5.33.0
   '@typescript-eslint/parser': ^5.33.0
+  dotenv-vault-core: ^0.6.1
   eslint: ^8.26.0
   eslint-config-next: 13.0.2
   next: 13.0.2
@@ -20,6 +21,7 @@ specifiers:
   prisma: ^4.5.0
   react: 18.2.0
   react-dom: 18.2.0
+  react-icons: ^4.7.1
   superjson: 1.9.1
   typescript: ^4.8.4
   zod: ^3.18.0
@@ -32,10 +34,12 @@ dependencies:
   '@trpc/next': 10.7.0_2oh7zi2rok7ahhg53vlqwnheia
   '@trpc/react-query': 10.7.0_x4ie6nhblo2vtx2aafrgzlfqy4
   '@trpc/server': 10.7.0
+  dotenv-vault-core: 0.6.1
   next: 13.0.2_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.18.7_pknogjuzx4bv7zxtatcb2ahtsq
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-icons: 4.7.1_react@18.2.0
   superjson: 1.9.1
   zod: 3.20.2
 
@@ -802,6 +806,18 @@ packages:
     dependencies:
       esutils: 2.0.3
     dev: true
+
+  /dotenv-vault-core/0.6.1:
+    resolution: {integrity: sha512-BLyzb+Y/ai4py2SF7nnfPF2nb+8QygTIVJxFvn6DyfCoajUfIjOQF3+FxQ2eF3s84kHJa8wSaPKoxIT3Vg4DHQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      dotenv: 16.0.3
+    dev: false
+
+  /dotenv/16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /emoji-regex/9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
@@ -1914,6 +1930,14 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-icons/4.7.1_react@18.2.0:
+    resolution: {integrity: sha512-yHd3oKGMgm7zxo3EA7H2n7vxSoiGmHk5t6Ou4bXsfcgWyhfDKMpyKfhHR6Bjnn63c+YXBLBPUql9H4wPJM6sXw==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-is/16.13.1:
