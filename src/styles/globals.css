@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .btn {
+    @apply rounded-lg bg-primary-900 px-3 py-2 text-sm text-primary-100 hover:scale-150 focus:ring-primary-900 focus:ring-offset-2 active:bg-primary-500 hover:enabled:bg-purple-700;
+  }
+}
