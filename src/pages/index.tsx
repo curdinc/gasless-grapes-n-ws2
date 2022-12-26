@@ -3,7 +3,6 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 
-import { Button } from "@components/input/Button";
 import { EmailForm } from "@components/pages/home/EmailForm";
 import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
@@ -19,15 +18,8 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-h-screen bg-neutral-900 text-purple-100">
-        <nav className="flex items-baseline justify-between px-2 py-3">
-          <Link href={Routes.home} className="font-heading text-xl font-bold">
-            🍇 Gasless Grapes
-          </Link>
-          <Button className="btn border-2 border-primary-300 bg-transparent text-primary-300">
-            <Link href={Routes.wallet}>Alpha Log In</Link>
-          </Button>
-        </nav>
+      <main>
+       
         <div className={"mx-auto max-w-lg p-5"}>
           <h1
             className={"font-heading text-4xl font-extrabold text-primary-300"}
