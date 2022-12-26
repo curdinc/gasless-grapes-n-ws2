@@ -4,6 +4,10 @@
 
 @layer components {
   .btn {
-    @apply rounded-lg bg-primary-900 px-3 py-2 text-sm text-primary-100 hover:scale-150 focus:ring-primary-900 focus:ring-offset-2 active:bg-primary-500 hover:enabled:bg-purple-700;
+    @apply rounded-lg bg-primary-900 px-3 py-2 text-sm text-primary-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-1  focus-visible:ring-offset-transparent hover:enabled:bg-purple-800 active:enabled:bg-primary-900;
+  }
+
+  .link {
+    @apply text-primary-400 hover:text-primary-300 hover:underline;
   }
 }

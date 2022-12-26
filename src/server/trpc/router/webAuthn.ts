@@ -1,13 +1,13 @@
 import { env } from "@env/server.mjs";
 import type {
   VerifiedAuthenticationResponse,
-  VerifiedRegistrationResponse
+  VerifiedRegistrationResponse,
 } from "@simplewebauthn/server";
 import {
   generateAuthenticationOptions,
   generateRegistrationOptions,
   verifyAuthenticationResponse,
-  verifyRegistrationResponse
+  verifyRegistrationResponse,
 } from "@simplewebauthn/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -18,28 +18,26 @@ const ONE_MINUTE_IN_MILLISECONDS = 60_000;
 // Human-readable title for your website
 export const WEB_AUTH_RP_NAME = "Gasless Grapes";
 // A unique identifier for your website
-export const WEB_AUTH_RP_ID =
-  env.NODE_ENV === "development" ? "f039-99-251-133-25.ngrok.io" : "";
+export const WEB_AUTH_RP_ID = env.NODE_ENV === "development" ? "localhost" : "";
 // The URL at which registrations and authentications should occur
 export const WEB_AUTH_RP_ORIGIN =
-  env.NODE_ENV === "development" ? `https://${WEB_AUTH_RP_ID}` : "";
+  env.NODE_ENV === "development" ? `http://${WEB_AUTH_RP_ID}:3000` : "";
+// ECDSA w/ SHA-256
+export const ECDSA_W_SHA256_ALG = -7;
 
 let tempCredId = "";
 let tempPubKey = "";
-const processStringChallenge = (x: string) => x.charCodeAt(0);
 
 export const webAuthnRouter = router({
   getRegistrationOptions: publicProcedure.query(({ ctx }) => {
+    const { prisma } = ctx;
     const options = generateRegistrationOptions({
       rpName: WEB_AUTH_RP_NAME,
       rpID: WEB_AUTH_RP_ID,
       userID: "1234",
       userName: "test username",
-      userDisplayName: "user display name",
-
-      // Don't prompt users for additional information about the authenticator
-      // (Recommended for smoother UX)
-      attestationType: "none",
+      // userDisplayName: "user display name",
+      attestationType: "direct",
       // Prevent users from re-registering existing authenticators
       //   excludeCredentials: userAuthenticators.map((authenticator) => ({
       //     id: authenticator.credentialID,
@@ -49,7 +47,19 @@ export const webAuthnRouter = router({
       //   })),
       challenge: Buffer.from("abcdefg", "utf-8"),
       timeout: ONE_MINUTE_IN_MILLISECONDS,
-      //   authenticatorSelection: {},
+      authenticatorSelection: {
+        // "Discoverable credentials" used to be called "resident keys". The
+        // old name persists in the options passed to `navigator.credentials.create()`.
+        residentKey: "required",
+        userVerification: "preferred",
+        requireResidentKey: true,
+        authenticatorAttachment: "platform",
+      },
+      supportedAlgorithmIDs: [ECDSA_W_SHA256_ALG],
+      extensions: {
+        credProps: true,
+        uvm: true,  
+      },
     });
 
     console.log("options", options);
@@ -60,6 +70,15 @@ export const webAuthnRouter = router({
     .input(z.any())
     .mutation(async ({ input }) => {
       console.log("input", input);
+      console.log(
+        'JSON.parse(Buffer.from(input.response.clientDataJSON, "base64url").toString("utf-8"))',
+        JSON.parse(
+          Buffer.from(input.response.clientDataJSON, "base64url").toString(
+            "utf-8"
+          )
+        )
+      );
+
       let verification: VerifiedRegistrationResponse;
       try {
         verification = await verifyRegistrationResponse({
@@ -69,6 +88,8 @@ export const webAuthnRouter = router({
           ),
           expectedOrigin: WEB_AUTH_RP_ORIGIN,
           expectedRPID: WEB_AUTH_RP_ID,
+          requireUserVerification: true,
+          supportedAlgorithmIDs: [ECDSA_W_SHA256_ALG],
         });
       } catch (error) {
         console.error(error);
@@ -142,6 +163,7 @@ export const webAuthnRouter = router({
             transports: ["internal"],
             counter: 0,
           },
+          requireUserVerification: true,
         });
       } catch (error) {
         console.error(error);
