@@ -13,7 +13,7 @@ module.exports = {
       },
       colors: {
         primary: colors.violet,
-        neutral: colors.gray,
+        neutral: colors.zinc,
         accent: colors.cyan,
         success: colors.emerald,
         warning: colors.amber,
@@ -21,8 +21,8 @@ module.exports = {
       },
     },
   },
-  future: {
-    hoverOnlyWhenSupported: true,
-  },
-  plugins: [],
+  // future: {
+  //   hoverOnlyWhenSupported: true,
+  // },
+  plugins: [require("@tailwindcss/forms")],
 };
