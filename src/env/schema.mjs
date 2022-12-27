@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("dotenv-vault-core").config();
 // @ts-check
 import { z } from "zod";
 
