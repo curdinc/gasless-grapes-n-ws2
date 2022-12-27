@@ -4,7 +4,6 @@ import type {
   RegistrationCredentialJSON,
 } from "@simplewebauthn/typescript-types";
 import { ErrorMessages } from "@utils/messages";
-import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
 import {
   Form,
@@ -15,10 +14,10 @@ import {
   FormSubmit,
   useFormState,
 } from "ariakit/form";
-import Link from "next/link";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 
 export const SignUpForm = () => {
+  const router = useRouter();
   const { redirectUrl } = useRouter().query;
   const form = useFormState({
     defaultValues: { deviceName: "", email: "", genericError: "" },
@@ -27,13 +26,9 @@ export const SignUpForm = () => {
   form.useSubmit(async () => {
     let registrationOptions: PublicKeyCredentialCreationOptionsJSON;
     try {
-      const _registrationOptions =
-        await utils.webAuthn.getRegistrationOptions.getData();
-      if (!_registrationOptions) {
-        throw new Error("Missing registrationOptions");
-      }
-      registrationOptions = _registrationOptions;
-      console.log("registrationOptions", registrationOptions);
+      registrationOptions = await utils.webAuthn.getRegistrationOptions.fetch({
+        deviceName: form.getValue(form.names.deviceName),
+      });
     } catch (e) {
       console.error("Error Fetching registration options", e);
       form.setErrors({
@@ -48,7 +43,7 @@ export const SignUpForm = () => {
     } catch (e) {
       console.error("Error getting user credentials:", e);
       form.setErrors({
-        genericError: ErrorMessages.userDeclinedRegistration,
+        genericError: ErrorMessages.userDeclinedRegistrationOrTimeout,
       });
       return;
     }
@@ -58,7 +53,7 @@ export const SignUpForm = () => {
     } catch (e) {
       console.error("Error verifying device credentials");
       form.setErrors({
-        genericError: ErrorMessages.userDeclinedRegistration,
+        genericError: ErrorMessages.userDeclinedRegistrationOrTimeout,
       });
       return;
     }
@@ -100,7 +95,7 @@ export const SignUpForm = () => {
           className="pt-2 text-sm text-neutral-400"
           name={form.names.deviceName}
         >
-          Helps identify your device when managing access to your wallet
+          Helps to identify your devices associated with your wallet
         </FormDescription>
         <FormError
           name={form.names.deviceName}
@@ -122,8 +117,7 @@ export const SignUpForm = () => {
           className="pt-2 text-sm text-neutral-400"
           name={form.names.email}
         >
-          In the event that we need to contact your for updates regarding your
-          account
+          Only used to contact you with updates to your account or wallet
         </FormDescription>
         <FormError
           name={form.names.email}
@@ -131,17 +125,11 @@ export const SignUpForm = () => {
         />
       </div>
       <div className="pt-5">
-        <FormSubmit className="btn w-full">Sign Up</FormSubmit>
+        <FormSubmit className="btn w-full">Create new account</FormSubmit>
         <FormError
           name={form.names.genericError}
           className="pt-2 text-sm text-danger-400"
         />
-        <p className="pt-2 text-sm text-neutral-400">
-          Already have an account?{" "}
-          <Link className="link" href={Routes.signIn}>
-            Sign In
-          </Link>
-        </p>
       </div>
     </Form>
   );

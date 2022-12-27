@@ -1,10 +1,8 @@
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
 
 import { EmailForm } from "@components/pages/home/EmailForm";
-import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
 
 const Home: NextPage = () => {
@@ -19,7 +17,6 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-       
         <div className={"mx-auto max-w-lg p-5"}>
           <h1
             className={"font-heading text-4xl font-extrabold text-primary-300"}

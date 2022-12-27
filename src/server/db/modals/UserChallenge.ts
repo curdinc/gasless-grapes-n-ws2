@@ -1,34 +1,18 @@
-import { prisma, PrismaObject } from "../client";
+import { redis } from "@utils/redis";
 
+const THREE_MINUTES_IN_SECONDS = 180;
+const makeUserChallengeKey = (userId: string) => `${userId}-challenge`;
 export function UserChallenge() {
-  return Object.assign(PrismaObject, {
-    async saveChallenge(
-      userId: string,
-      challenge: string
-    ): Promise<{ userId: string; challenge: string; id: string }> {
-      const challengeResult = await prisma.userChallenge.upsert({
-        where: { userId },
-        update: {
-          challenge,
-        },
-        create: {
-          challenge,
-          userId,
-        },
+  return {
+    async set(userId: string, challenge: string): Promise<boolean> {
+      const result = await redis.set(makeUserChallengeKey(userId), challenge, {
+        ex: THREE_MINUTES_IN_SECONDS,
       });
-      return challengeResult;
+      return result === "OK";
     },
-
-    async getChallengeString(userId: string): Promise<string | null> {
-      const challenge = await prisma.userChallenge.findUnique({
-        where: {
-          userId,
-        },
-        select: {
-          challenge: true,
-        },
-      });
-      return challenge ? challenge.challenge : null;
+    async get(userId: string): Promise<string | null> {
+      const challenge = await redis.get<string>(makeUserChallengeKey(userId));
+      return challenge;
     },
-  });
+  };
 }
