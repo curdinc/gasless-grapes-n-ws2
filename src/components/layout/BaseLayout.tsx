@@ -15,8 +15,6 @@ const nunito = Nunito({
 
 export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  console.log("router.pathname", router.pathname);
-  console.log("router.asPath", router.asPath);
   return (
     <main
       className={`${inter.variable} ${nunito.variable} flex min-h-screen flex-col bg-neutral-900 font-sans text-purple-100`}
