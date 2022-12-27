@@ -1,4 +1,11 @@
 {
   "dotenv.enableAutocloaking": false,
-  "cSpell.words": ["simplewebauthn", "superjson", "trpc", "webauthn"]
+  "cSpell.words": [
+    "Authed",
+    "simplewebauthn",
+    "superjson",
+    "trpc",
+    "UPSTASH",
+    "webauthn"
+  ]
 }
