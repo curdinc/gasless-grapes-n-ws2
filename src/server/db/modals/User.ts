@@ -1,4 +1,3 @@
-import type { Prisma } from "@prisma/client";
 import { prisma, PrismaObject } from "../client";
 
 export function User() {
@@ -32,6 +31,5 @@ export function User() {
         },
       });
     },
-   
   });
 }
