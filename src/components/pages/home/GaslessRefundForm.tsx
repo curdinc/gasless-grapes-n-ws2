@@ -138,9 +138,10 @@ export const GaslessRefundForm = () => {
                     <FormRemove
                       name={form.names.transactions}
                       index={index}
-                      as={IoTrash}
                       className="scale-125"
-                    />
+                    >
+                      <IoTrash />
+                    </FormRemove>
                   </div>
                   <FormError
                     name={form.names.transactions}
@@ -182,7 +183,10 @@ export const GaslessRefundForm = () => {
       {!siweUser?.address && (
         <div className="py-3">
           <SignInWithEthereum
-            onSignInError={({ error }) => {
+            onSignInError={async ({ error }) => {
+              setSiweErrorMessage(error.message);
+            }}
+            onConnectWalletError={async ({ error }) => {
               setSiweErrorMessage(error.message);
             }}
           />

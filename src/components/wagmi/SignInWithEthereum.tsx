@@ -1,16 +1,21 @@
+import { Button } from "@components/input/Button";
 import { trpc } from "@utils/trpc";
 import { useState } from "react";
 import { SiweMessage } from "siwe";
+import type { ErrorCallbackType, VoidReturnType } from "types/functionCallback";
 import { useAccount, useNetwork, useSignMessage } from "wagmi";
+import type { ConnectWalletProps } from "./ConnectWallet";
 import { ConnectWallet } from "./ConnectWallet";
+
+export type SignInWithEthereumProps = {
+  onSuccess?: (args: { address: string }) => VoidReturnType;
+  onError?: ErrorCallbackType;
+};
 
 export function SignInWithEthereumButton({
   onSuccess,
   onError,
-}: {
-  onSuccess?: (args: { address: string }) => void | Promise<void>;
-  onError?: (args: { error: Error }) => void | Promise<void>;
-}) {
+}: SignInWithEthereumProps) {
   const [isSigningMessage, setIsSigningMessage] = useState(false);
   const { address } = useAccount();
   const { chain } = useNetwork();
@@ -87,9 +92,13 @@ export function SignInWithEthereumButton({
 export const SignInWithEthereum = ({
   onSignIn,
   onSignInError,
+  onConnectWallet,
+  onConnectWalletError,
 }: {
-  onSignIn?: (args: { address: string }) => void | Promise<void>;
-  onSignInError?: (args: { error: Error }) => void | Promise<void>;
+  onConnectWallet?: ConnectWalletProps["onSuccess"];
+  onConnectWalletError?: ConnectWalletProps["onError"];
+  onSignIn?: SignInWithEthereumProps["onSuccess"];
+  onSignInError?: SignInWithEthereumProps["onError"];
 }) => {
   const { isConnected } = useAccount();
   const utils = trpc.useContext();
@@ -102,23 +111,28 @@ export const SignInWithEthereum = ({
     },
   });
 
-  if (!isConnected) {
-    return <ConnectWallet />;
-  }
   if (!siweUser) {
     return <div>loading...</div>;
+  }
+  if (!isConnected) {
+    return (
+      <ConnectWallet
+        onError={onConnectWalletError}
+        onSuccess={onConnectWallet}
+      />
+    );
   }
   return siweUser.address ? (
     <div>
       <div>Signed in as {siweUser.address}</div>
-      <button
+      <Button
         className="btn"
         onClick={async () => {
           logout();
         }}
       >
         Log Out
-      </button>
+      </Button>
     </div>
   ) : (
     <SignInWithEthereumButton

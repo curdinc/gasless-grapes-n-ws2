@@ -9,6 +9,7 @@ import {
 } from "@simplewebauthn/server";
 import { TRPCError } from "@trpc/server";
 import { jwtCookie } from "@utils/jwtCookie";
+import { Routes } from "@utils/routes";
 import { WebAuthnUtils } from "@utils/webAuthn";
 import { randomUUID } from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
@@ -16,7 +17,6 @@ import { AuthenticationCredentialSchema } from "types/schema/WebAuthn/Authentica
 import { TransportSchema } from "types/schema/WebAuthn/common";
 import {
   TWO_MINUTE_IN_MILLISECONDS,
-  WEB_AUTHN_CURRENT_RP_ID,
   WEB_AUTHN_RP_ID,
   WEB_AUTHN_RP_ORIGIN,
 } from ".";
@@ -27,7 +27,7 @@ export const webAuthnAuthenticationProcedures = {
       // You can require users to use a previously-registered authenticator here
       allowCredentials: [],
       userVerification: "preferred",
-      rpID: WEB_AUTHN_CURRENT_RP_ID,
+      rpID: Routes.origin,
       timeout: TWO_MINUTE_IN_MILLISECONDS,
       extensions: {
         uvm: true,

@@ -1,11 +1,9 @@
 import { Button } from "@components/input/Button";
-import { getServerAuthSession } from "@server/common/get-server-auth-session";
 import { startAuthentication } from "@simplewebauthn/browser";
 import type { AuthenticationCredentialJSON } from "@simplewebauthn/typescript-types";
 import { ErrorMessages } from "@utils/messages";
 import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
-import type { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -78,21 +76,3 @@ export default function SignIn() {
     </div>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { req, query } = context;
-  const { redirectUrl } = query;
-  const { user } = await getServerAuthSession({
-    cookieString: req.headers.cookie,
-  });
-  if (user?.state === "loggedIn") {
-    return {
-      redirect: {
-        destination:
-          typeof redirectUrl === "string" ? redirectUrl : Routes.home,
-        permanent: false,
-      },
-    };
-  }
-  return { props: {} };
-};

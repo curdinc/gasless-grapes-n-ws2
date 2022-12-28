@@ -51,6 +51,7 @@ export const clientSchema = z.object({
   NEXT_PUBLIC_UPSTASH_REDIS_REST_URL: z.string(),
   NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN: z.string(),
   NEXT_PUBLIC_NODE_ENV: z.string(),
+  NEXT_PUBLIC_VERCEL_URL: z.string(),
 });
 
 /**
@@ -60,6 +61,7 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
+  NEXT_PUBLIC_VERCEL_URL: process.env.VERCEL_URL,
   NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
   NEXT_PUBLIC_UPSTASH_REDIS_REST_URL:
     process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL,

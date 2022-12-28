@@ -11,6 +11,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import { jwtCookie } from "@utils/jwtCookie";
 import { ErrorMessages } from "@utils/messages";
+import { Routes } from "@utils/routes";
 import { WebAuthnUtils } from "@utils/webAuthn";
 import * as crypto from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
@@ -20,7 +21,6 @@ import { z } from "zod";
 import {
   ECDSA_W_SHA256_ALG,
   TWO_MINUTE_IN_MILLISECONDS,
-  WEB_AUTHN_CURRENT_RP_ID,
   WEB_AUTHN_RP_ID,
   WEB_AUTHN_RP_NAME,
   WEB_AUTHN_RP_ORIGIN,
@@ -44,7 +44,7 @@ export const webAuthnRegistrationProcedures = {
       });
       const options = generateRegistrationOptions({
         rpName: WEB_AUTHN_RP_NAME,
-        rpID: WEB_AUTHN_CURRENT_RP_ID,
+        rpID: Routes.origin,
         userID: user.id,
         userName: input.deviceName,
         attestationType: "direct",

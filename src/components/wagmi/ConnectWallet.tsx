@@ -1,32 +1,28 @@
 import { Button } from "@components/input/Button";
+import type { ErrorCallbackType, VoidReturnType } from "types/functionCallback";
 import { useConnect } from "wagmi";
 
-export const ConnectWallet = ({
-  onError,
-  onSuccess,
-}: {
-  onSuccess?: (args: {
-    address: string;
-    chainId: number;
-  }) => void | Promise<void>;
-  onError?: (args: { error: Error }) => void | Promise<void>;
-}) => {
-  const { connect, connectors, error, isLoading, pendingConnector } =
-    useConnect({
-      onError(error) {
-        if (onError) {
-          onError({ error });
-        }
-      },
-      onSuccess(data) {
-        if (onSuccess) {
-          onSuccess({
-            address: data.account,
-            chainId: data.chain.id,
-          });
-        }
-      },
-    });
+export type ConnectWalletProps = {
+  onSuccess?: (args: { address: string; chainId: number }) => VoidReturnType;
+  onError?: ErrorCallbackType;
+};
+
+export const ConnectWallet = ({ onError, onSuccess }: ConnectWalletProps) => {
+  const { connect, connectors, isLoading, pendingConnector } = useConnect({
+    onError(error) {
+      if (onError) {
+        onError({ error });
+      }
+    },
+    onSuccess(data) {
+      if (onSuccess) {
+        onSuccess({
+          address: data.account,
+          chainId: data.chain.id,
+        });
+      }
+    },
+  });
   // const { address, connector, isConnected } = useAccount();
   // const { data: ensAvatar } = useEnsAvatar({ address });
   // const { data: ensName } = useEnsName({ address });
@@ -66,8 +62,6 @@ export const ConnectWallet = ({
           );
         }
       })}
-
-      {error && <div>{error.message}</div>}
     </div>
   );
 };

@@ -48,5 +48,5 @@ model GasRefund {
   walletAddress String?  @unique
   transactions  String[]
   email         String?  @unique
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime @default(now()) @updatedAt
 }
