@@ -27,7 +27,7 @@ export const webAuthnAuthenticationProcedures = {
       // You can require users to use a previously-registered authenticator here
       allowCredentials: [],
       userVerification: "preferred",
-      rpID: Routes.origin,
+      rpID: Routes.hostname,
       timeout: TWO_MINUTE_IN_MILLISECONDS,
       extensions: {
         uvm: true,

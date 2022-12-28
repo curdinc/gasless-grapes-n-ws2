@@ -19,7 +19,7 @@ import { useRouter } from "next/router";
 
 export const SignUpForm = () => {
   const router = useRouter();
-  const { redirectUrl } = useRouter().query;
+  const redirectUrl = router.query[Routes.authRedirectQueryParam];
   const form = useFormState({
     defaultValues: { deviceName: "", email: "", genericError: "" },
   });

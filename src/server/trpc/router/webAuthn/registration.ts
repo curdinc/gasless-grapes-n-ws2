@@ -44,7 +44,7 @@ export const webAuthnRegistrationProcedures = {
       });
       const options = generateRegistrationOptions({
         rpName: WEB_AUTHN_RP_NAME,
-        rpID: Routes.origin,
+        rpID: Routes.hostname,
         userID: user.id,
         userName: input.deviceName,
         attestationType: "direct",

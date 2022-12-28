@@ -9,11 +9,26 @@ export async function middleware(request: NextRequest) {
       cookieString: request.headers.get("cookie") ?? undefined,
     });
     if (user?.state === "loggedIn") {
-      const redirectUrl = request.nextUrl.searchParams.get("redirectUrl");
+      const redirectUrl = request.nextUrl.searchParams.get(
+        Routes.authRedirectQueryParam
+      );
       return NextResponse.redirect(
         new URL(redirectUrl ?? Routes.home, request.nextUrl.origin)
       );
     }
-    return NextResponse.next();
+  }
+
+  if (Routes.authRequiredPages.includes(request.nextUrl.pathname)) {
+    const { user } = await getServerAuthSession({
+      cookieString: request.headers.get("cookie") ?? undefined,
+    });
+    if (user?.state !== "loggedIn") {
+      const url = new URL(Routes.signIn, request.nextUrl.origin);
+      url.searchParams.set(
+        Routes.authRedirectQueryParam,
+        request.nextUrl.pathname
+      );
+      return NextResponse.redirect(url);
+    }
   }
 }

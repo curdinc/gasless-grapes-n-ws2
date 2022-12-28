@@ -10,7 +10,8 @@ import { useState } from "react";
 
 export default function SignIn() {
   const router = useRouter();
-  const { redirectUrl } = useRouter().query;
+  const redirectUrl = router.query[Routes.authRedirectQueryParam];
+
   const { data: authenticationOptions } =
     trpc.webAuthn.getAuthenticationOptions.useQuery(undefined, {
       refetchOnMount: false,

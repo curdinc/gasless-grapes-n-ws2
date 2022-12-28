@@ -10,7 +10,7 @@ export const WEB_AUTHN_RP_NAME = "Gasless Grapes";
 
 // A unique identifier for your website
 export const WEB_AUTHN_RP_ID = [
-  Routes.origin,
+  Routes.hostname,
   "localhost",
   "gaslessgrapes.vercel.app",
 ];
