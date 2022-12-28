@@ -2,10 +2,13 @@
   "dotenv.enableAutocloaking": false,
   "cSpell.words": [
     "Authed",
+    "gaslessgrapes",
     "simplewebauthn",
+    "siwe",
     "superjson",
     "trpc",
     "UPSTASH",
+    "Wagmi",
     "webauthn"
   ]
 }

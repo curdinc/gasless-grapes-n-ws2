@@ -69,7 +69,7 @@ export default function SignIn() {
         </Button>
         {error && <p className="pt-2 text-sm text-danger-400">{error}</p>}
         <p className="pt-2 text-sm text-neutral-400">
-          Don&apos; have an account yet?{" "}
+          Don&apos;t have an account yet?{" "}
           <Link className="link" href={Routes.signUp}>
             Create a new account
           </Link>

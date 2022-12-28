@@ -2,7 +2,8 @@ import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 
-import { EmailForm } from "@components/pages/home/EmailForm";
+import { GaslessRefundForm } from "@components/pages/home/GaslessRefundForm";
+import { WagmiClientConfig } from "@components/wagmi/ClientConfig";
 import { trpc } from "@utils/trpc";
 
 const Home: NextPage = () => {
@@ -19,14 +20,17 @@ const Home: NextPage = () => {
       <main>
         <div className={"mx-auto max-w-lg p-5"}>
           <h1
-            className={"font-heading text-4xl font-extrabold text-primary-300"}
+            className={"font-heading text-3xl font-extrabold text-primary-300"}
           >
             The hardware wallet you already have.
           </h1>
           <p className="text-md py-2 text-opacity-70">
             Say goodbye to seed phrases and gas fees.
           </p>
-          <EmailForm />
+          {/* <EmailForm /> */}
+          <WagmiClientConfig>
+            <GaslessRefundForm />
+          </WagmiClientConfig>
         </div>
       </main>
     </>

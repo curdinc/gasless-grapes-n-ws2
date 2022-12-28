@@ -4,6 +4,7 @@ import type {
   RegistrationCredentialJSON,
 } from "@simplewebauthn/typescript-types";
 import { ErrorMessages } from "@utils/messages";
+import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
 import {
   Form,
@@ -27,7 +28,8 @@ export const SignUpForm = () => {
     let registrationOptions: PublicKeyCredentialCreationOptionsJSON;
     try {
       registrationOptions = await utils.webAuthn.getRegistrationOptions.fetch({
-        deviceName: form.getValue(form.names.deviceName),
+        deviceName: form.values.deviceName,
+        email: form.values.email,
       });
     } catch (e) {
       console.error("Error Fetching registration options", e);
@@ -49,7 +51,7 @@ export const SignUpForm = () => {
     }
 
     try {
-      const result = await verifyDeviceRegistration(attestationResponse);
+      await verifyDeviceRegistration(attestationResponse);
     } catch (e) {
       console.error("Error verifying device credentials");
       form.setErrors({
@@ -61,15 +63,16 @@ export const SignUpForm = () => {
 
   const { mutateAsync: verifyDeviceRegistration } =
     trpc.webAuthn.verifyRegistration.useMutation({
-      onError(error, variables) {
+      onError(error) {
         console.error("registration error", error);
-        console.log("variables", variables);
       },
-      onSuccess(data, variables) {
-        console.log("registration data", data);
-        console.log("variables", variables);
+      onSuccess(verificationResult) {
         if (typeof redirectUrl === "string") {
           router.push(redirectUrl);
+        } else if (verificationResult.verified === true) {
+          router.push(Routes.wallet);
+        } else if (verificationResult.verified === false) {
+          router.push(Routes.home);
         }
       },
     });
@@ -89,7 +92,7 @@ export const SignUpForm = () => {
           name={form.names.deviceName}
           required
           placeholder="iPhone"
-          className="w-full rounded-lg bg-neutral-400 p-2 text-neutral-900  placeholder:text-neutral-700 focus:ring-1 focus:ring-primary-500 focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-offset-transparent aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger-400"
+          className="text-input"
         />
         <FormDescription
           className="pt-2 text-sm text-neutral-400"
@@ -111,7 +114,7 @@ export const SignUpForm = () => {
           autoComplete="email"
           name={form.names.email}
           placeholder="you@example.com"
-          className="w-full rounded-lg bg-neutral-400 p-2 text-neutral-900  placeholder:text-neutral-700 focus:ring-1 focus:ring-primary-500 focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-offset-transparent aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger-400"
+          className="text-input"
         />
         <FormDescription
           className="pt-2 text-sm text-neutral-400"

@@ -36,6 +36,7 @@ export const createContext = async (opts: CreateNextContextOptions) => {
     ...(await createContextInner({
       session,
     })),
+    req,
     res,
   };
 };

@@ -41,3 +41,12 @@ model DeviceAuthenticator {
   @@unique([credentialId, credentialPublicKey])
   @@unique([userId, deviceName])
 }
+
+model GasRefund {
+  id            String   @id @default(uuid())
+  accessCode    String   @unique
+  walletAddress String?  @unique
+  transactions  String[]
+  email         String?  @unique
+  updatedAt     DateTime @updatedAt
+}

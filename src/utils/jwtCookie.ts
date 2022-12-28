@@ -1,15 +1,24 @@
 import { env } from "@env/server.mjs";
+import type { CookieSerializeOptions } from "cookie";
 import { parse, serialize } from "cookie";
 import dayjs from "dayjs";
 import * as jose from "jose";
 import type { GetServerSidePropsContext } from "next";
 import type { z, ZodType } from "zod";
 
-export class JwtCookie {
+class JwtCookie {
   protected secret: string;
+  protected baseCookieSetting: CookieSerializeOptions = {
+    path: "/",
+    httpOnly: true,
+    secure: env.NODE_ENV === "production",
+    sameSite: "lax",
+  } as const;
+
   constructor({ secret }: { secret: string }) {
     this.secret = secret;
   }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async get<T extends ZodType<any, any, any>>({
     cookieString,
@@ -34,6 +43,7 @@ export class JwtCookie {
     );
     return schema.parse(payload);
   }
+
   async set<T extends jose.JWTPayload>(
     res: GetServerSidePropsContext["res"],
     name: string,
@@ -47,12 +57,20 @@ export class JwtCookie {
     res.setHeader(
       "Set-Cookie",
       serialize(name, signedData, {
-        path: "/",
+        ...this.baseCookieSetting,
         expires: dayjs().add(7, "days").toDate(),
-        httpOnly: true,
-        secure: env.NODE_ENV === "production",
-        sameSite: "lax",
+      })
+    );
+  }
+  async expire(res: GetServerSidePropsContext["res"], name: string) {
+    res.setHeader(
+      "Set-Cookie",
+      serialize(name, "", {
+        ...this.baseCookieSetting,
+        expires: dayjs().subtract(1, "days").toDate(),
       })
     );
   }
 }
+
+export const jwtCookie = new JwtCookie({ secret: env.JWT_SECRET });

@@ -1,4 +1,3 @@
-import { env } from "@env/server.mjs";
 import { AUTH_COOKIE_NAME } from "@server/common/get-server-auth-session";
 import { DeviceAuthenticator } from "@server/db/modals/DeviceAuthenticator";
 import { UserChallenge } from "@server/db/modals/UserChallenge";
@@ -9,7 +8,7 @@ import {
   verifyAuthenticationResponse,
 } from "@simplewebauthn/server";
 import { TRPCError } from "@trpc/server";
-import { JwtCookie } from "@utils/jwtCookie";
+import { jwtCookie } from "@utils/jwtCookie";
 import { WebAuthnUtils } from "@utils/webAuthn";
 import { randomUUID } from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
@@ -17,8 +16,9 @@ import { AuthenticationCredentialSchema } from "types/schema/WebAuthn/Authentica
 import { TransportSchema } from "types/schema/WebAuthn/common";
 import {
   TWO_MINUTE_IN_MILLISECONDS,
-  WEB_AUTH_RP_ID,
-  WEB_AUTH_RP_ORIGIN,
+  WEB_AUTHN_CURRENT_RP_ID,
+  WEB_AUTHN_RP_ID,
+  WEB_AUTHN_RP_ORIGIN,
 } from ".";
 
 export const webAuthnAuthenticationProcedures = {
@@ -27,7 +27,7 @@ export const webAuthnAuthenticationProcedures = {
       // You can require users to use a previously-registered authenticator here
       allowCredentials: [],
       userVerification: "preferred",
-      rpID: WEB_AUTH_RP_ID,
+      rpID: WEB_AUTHN_CURRENT_RP_ID,
       timeout: TWO_MINUTE_IN_MILLISECONDS,
       extensions: {
         uvm: true,
@@ -41,15 +41,11 @@ export const webAuthnAuthenticationProcedures = {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-    await new JwtCookie({ secret: env.JWT_SECRET }).set<AuthUserType>(
-      ctx.res,
-      AUTH_COOKIE_NAME,
-      {
-        currentDeviceName: "",
-        id: userId,
-        state: "pendingAuthentication",
-      }
-    );
+    await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
+      currentDeviceName: "",
+      id: userId,
+      state: "pendingAuthentication",
+    });
     return options;
   }),
   verifyAuthentication: publicProcedure
@@ -81,8 +77,8 @@ export const webAuthnAuthenticationProcedures = {
         verification = await verifyAuthenticationResponse({
           credential: input,
           expectedChallenge: challenge,
-          expectedOrigin: WEB_AUTH_RP_ORIGIN,
-          expectedRPID: WEB_AUTH_RP_ID,
+          expectedOrigin: WEB_AUTHN_RP_ORIGIN,
+          expectedRPID: WEB_AUTHN_RP_ID,
           authenticator: {
             credentialID: WebAuthnUtils.hexStringToBuffer(
               authenticator.credentialId
@@ -112,15 +108,11 @@ export const webAuthnAuthenticationProcedures = {
         ),
         newCount: authenticationInfo.newCounter,
       });
-      await new JwtCookie({ secret: env.JWT_SECRET }).set<AuthUserType>(
-        ctx.res,
-        AUTH_COOKIE_NAME,
-        {
-          currentDeviceName: authenticator.deviceName,
-          id: authenticator.User.id,
-          state: "loggedIn",
-        }
-      );
+      await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
+        currentDeviceName: authenticator.deviceName,
+        id: authenticator.User.id,
+        state: "loggedIn",
+      });
       return { verified };
     }),
 };

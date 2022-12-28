@@ -10,4 +10,8 @@
   .link {
     @apply text-primary-400 hover:text-primary-300 hover:underline;
   }
+
+  .text-input {
+    @apply w-full rounded-lg bg-neutral-400 p-2 text-neutral-900  placeholder:text-neutral-600 focus:ring-1 focus:ring-primary-500 focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-offset-transparent aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger-400;
+  }
 }
