@@ -36,7 +36,7 @@ export const SignUpForm = () => {
       form.setErrors({
         genericError: ErrorMessages.somethingWentWrong,
       });
-      return;
+      throw e;
     }
 
     let attestationResponse: RegistrationCredentialJSON;
@@ -47,6 +47,8 @@ export const SignUpForm = () => {
       form.setErrors({
         genericError: ErrorMessages.userDeclinedRegistrationOrTimeout,
       });
+      throw e;
+
       return;
     }
 
@@ -95,7 +97,7 @@ export const SignUpForm = () => {
           className="text-input"
         />
         <FormDescription
-          className="pt-2 text-sm text-neutral-400"
+          className="pt-2 text-xs text-neutral-400"
           name={form.names.deviceName}
         >
           Helps to identify your devices associated with your wallet
@@ -117,7 +119,7 @@ export const SignUpForm = () => {
           className="text-input"
         />
         <FormDescription
-          className="pt-2 text-sm text-neutral-400"
+          className="pt-2 text-xs text-neutral-400"
           name={form.names.email}
         >
           Only used to contact you with updates to your account or wallet

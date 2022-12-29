@@ -1,6 +1,9 @@
-import { Button } from "@components/input/Button";
+import { Button } from "@components/ui/input/Button";
 import { startAuthentication } from "@simplewebauthn/browser";
-import type { AuthenticationCredentialJSON } from "@simplewebauthn/typescript-types";
+import type {
+  AuthenticationCredentialJSON,
+  PublicKeyCredentialRequestOptionsJSON,
+} from "@simplewebauthn/typescript-types";
 import { ErrorMessages } from "@utils/messages";
 import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
@@ -11,17 +14,14 @@ import { useState } from "react";
 export default function SignIn() {
   const router = useRouter();
   const redirectUrl = router.query[Routes.authRedirectQueryParam];
-
-  const { data: authenticationOptions } =
-    trpc.webAuthn.getAuthenticationOptions.useQuery(undefined, {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-    });
+  const utils = trpc.useContext();
 
   const { mutate: verifyAuthentication } =
     trpc.webAuthn.verifyAuthentication.useMutation({
       onError(error) {
-        console.error("auth error", error);
+        console.log("error.data", error.data);
+        console.log("error", error.shape);
+        setError(error.message);
       },
       onSuccess() {
         if (typeof redirectUrl === "string") {
@@ -34,23 +34,30 @@ export default function SignIn() {
   const [error, setError] = useState("");
 
   const authenticate = async () => {
-    if (!authenticationOptions) {
+    let authenticationOptions: PublicKeyCredentialRequestOptionsJSON;
+    try {
+      authenticationOptions =
+        await utils.webAuthn.getAuthenticationOptions.fetch();
+    } catch (e) {
+      if (e instanceof Error) {
+        setError(e.message);
+      }
       return;
     }
+
     let assertionResponse: AuthenticationCredentialJSON;
     try {
       assertionResponse = await startAuthentication(authenticationOptions);
     } catch (e) {
-      console.error(e);
+      let errorMessage = ErrorMessages.somethingWentWrong;
       if (e instanceof Error) {
         if (e.message.includes(ErrorMessages.webAuthnTimeOutOrCancel)) {
-          setError(ErrorMessages.userDeclinedRegistrationOrTimeout);
+          errorMessage = ErrorMessages.userDeclinedRegistrationOrTimeout;
         } else {
-          setError(e.message);
+          errorMessage = e.message;
         }
-      } else {
-        setError(ErrorMessages.somethingWentWrong);
       }
+      setError(errorMessage);
       return;
     }
     verifyAuthentication(assertionResponse);

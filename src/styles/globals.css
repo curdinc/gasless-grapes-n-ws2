@@ -2,7 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* From: https://github.com/unocss/unocss/blob/main/packages/reset/antfu.md */
+  .dark {
+    color-scheme: dark;
+  }
+  .dark ::-moz-selection {
+    background: #444;
+  }
+  .dark ::selection {
+    background: #444;
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+  div[row=""] {
+    display: flex;
+    flex-direction: row;
+  }
+  div[block=""] {
+    display: block;
+  }
+}
+
 @layer components {
+  .sr-only {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
   .btn {
     @apply rounded-lg bg-primary-900 px-3 py-2 text-sm text-primary-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-1  focus-visible:ring-offset-transparent hover:enabled:bg-purple-800 active:enabled:bg-primary-900;
   }

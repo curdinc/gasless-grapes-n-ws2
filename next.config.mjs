@@ -13,5 +13,15 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "static.alchemyapi.io",
+        port: "",
+        pathname: "/images/assets/**",
+      },
+    ],
+  },
 };
 export default config;

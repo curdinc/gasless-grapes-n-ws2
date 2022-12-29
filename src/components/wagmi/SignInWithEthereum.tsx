@@ -1,4 +1,4 @@
-import { Button } from "@components/input/Button";
+import { Button } from "@components/ui/input/Button";
 import { trpc } from "@utils/trpc";
 import { useState } from "react";
 import { SiweMessage } from "siwe";
@@ -102,8 +102,7 @@ export const SignInWithEthereum = ({
 }) => {
   const { isConnected } = useAccount();
   const utils = trpc.useContext();
-  const { data: siweUser, refetch: refetchSiweUser } =
-    trpc.siwe.me.useQuery(undefined);
+  const { data: siweUser, refetch: refetchSiweUser } = trpc.siwe.me.useQuery();
   const { mutate: logout } = trpc.siwe.logout.useMutation({
     async onSuccess() {
       utils.siwe.me.invalidate();

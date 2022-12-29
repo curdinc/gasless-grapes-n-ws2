@@ -1,10 +1,15 @@
 import { env } from "@env/client.mjs";
+import type {
+  AlchemyChainType,
+  SupportedChainType,
+  TenderlyChainType,
+} from "types/schema/blockchain/chains";
 
 export class Routes {
   static hostname = env.NEXT_PUBLIC_VERCEL_URL
     ? env.NEXT_PUBLIC_VERCEL_URL
     : env.NEXT_PUBLIC_NODE_ENV === "development"
-    ? `b4dc-142-189-10-126.ngrok.io`
+    ? `localhost`
     : "gaslessgrapes.com";
   static origin = `https://${Routes.hostname}`;
   static getAbsolutePath(path: string, query?: Record<string, string>) {
@@ -17,11 +22,12 @@ export class Routes {
     return url;
   }
 
+  // pages
   static home = "/";
   static wallet = "/wallet";
 
   // Auth
-  static authRequiredPages = [Routes.wallet];
+  static authProtectedPages = [Routes.wallet];
   static authBasePath = "/auth";
   static signIn = `${Routes.authBasePath}/sign-in`;
   static signUp = `${Routes.authBasePath}/sign-up`;

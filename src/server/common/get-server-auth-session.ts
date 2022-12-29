@@ -5,11 +5,8 @@ import {
 import { jwtCookie } from "@utils/jwtCookie";
 
 import type { AuthSessionType } from "types/schema/AuthUserSchema";
-import {
-  AuthUserSchema,
-  SiweNonceSchema,
-  SiweSchema,
-} from "types/schema/AuthUserSchema";
+import { AuthUserSchema } from "types/schema/AuthUserSchema";
+import { SiweNonceSchema, SiweSchema } from "types/schema/Siwe/SiweSchema";
 
 export const AUTH_COOKIE_NAME = "id";
 /**

@@ -1,8 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { jwtCookie } from "@utils/jwtCookie";
 import { generateNonce, SiweMessage } from "siwe";
-import type { SiweNonceType, SiweType } from "types/schema/AuthUserSchema";
-import { SiweSchema } from "types/schema/AuthUserSchema";
+import type { SiweNonceType, SiweType } from "types/schema/Siwe/SiweSchema";
+import { SiweSchema } from "types/schema/Siwe/SiweSchema";
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 

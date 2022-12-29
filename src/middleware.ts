@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (Routes.authRequiredPages.includes(request.nextUrl.pathname)) {
+  if (Routes.authProtectedPages.includes(request.nextUrl.pathname)) {
     const { user } = await getServerAuthSession({
       cookieString: request.headers.get("cookie") ?? undefined,
     });

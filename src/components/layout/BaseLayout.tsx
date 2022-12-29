@@ -24,11 +24,9 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
         <Link href={Routes.home} className="font-heading text-xl">
           🍇 Gasless Grapes
         </Link>
-        {!(
-          router.pathname === Routes.signIn || router.pathname === Routes.signUp
-        ) &&
+        {router.pathname === Routes.home &&
           env.NEXT_PUBLIC_NODE_ENV === "development" && (
-            <Link className="link mr-2" href={Routes.signUp}>
+            <Link className="link mr-2" href={Routes.wallet}>
               Try Alpha
             </Link>
           )}

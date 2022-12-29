@@ -3,8 +3,6 @@ import { Routes } from "@utils/routes";
 import { webAuthnAuthenticationProcedures } from "./authentication";
 import { webAuthnRegistrationProcedures } from "./registration";
 
-export const TWO_MINUTE_IN_MILLISECONDS = 120_000;
-
 // Human-readable title for your website
 export const WEB_AUTHN_RP_NAME = "Gasless Grapes";
 

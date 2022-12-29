@@ -1,4 +1,4 @@
-import { Button } from "@components/input/Button";
+import { Button } from "@components/ui/input/Button";
 import type { ErrorCallbackType, VoidReturnType } from "types/functionCallback";
 import { useConnect } from "wagmi";
 

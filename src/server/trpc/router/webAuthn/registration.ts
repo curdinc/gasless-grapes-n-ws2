@@ -1,5 +1,4 @@
 import { AUTH_COOKIE_NAME } from "@server/common/get-server-auth-session";
-import { DeviceAuthenticator } from "@server/db/modals/DeviceAuthenticator";
 import { User } from "@server/db/modals/User";
 import { UserChallenge } from "@server/db/modals/UserChallenge";
 import { publicProcedure } from "@server/trpc/trpc";
@@ -9,18 +8,17 @@ import {
   verifyRegistrationResponse,
 } from "@simplewebauthn/server";
 import { TRPCError } from "@trpc/server";
+import { Duration } from "@utils/duration";
 import { jwtCookie } from "@utils/jwtCookie";
 import { ErrorMessages } from "@utils/messages";
 import { Routes } from "@utils/routes";
 import { WebAuthnUtils } from "@utils/webAuthn";
 import * as crypto from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
-import { TransportSchema } from "types/schema/WebAuthn/common";
 import { RegisterCredentialSchema } from "types/schema/WebAuthn/RegistrationCredentialSchema";
 import { z } from "zod";
 import {
   ECDSA_W_SHA256_ALG,
-  TWO_MINUTE_IN_MILLISECONDS,
   WEB_AUTHN_RP_ID,
   WEB_AUTHN_RP_NAME,
   WEB_AUTHN_RP_ORIGIN,
@@ -38,7 +36,7 @@ export const webAuthnRegistrationProcedures = {
     )
     .query(async ({ input, ctx }) => {
       const userId = crypto.randomUUID();
-      const user = await User().maybeCreateUserForRegistration({
+      const user = await User().createRegistration({
         userId,
         email: input.email,
       });
@@ -49,12 +47,12 @@ export const webAuthnRegistrationProcedures = {
         userName: input.deviceName,
         attestationType: "direct",
         // Prevent users from re-registering existing authenticators
-        excludeCredentials: user.authenticators.map((authenticator) => ({
-          id: Buffer.from(authenticator.credentialId, "hex"),
-          type: "public-key",
-          transports: TransportSchema.parse(authenticator.transports),
-        })),
-        timeout: TWO_MINUTE_IN_MILLISECONDS,
+        // excludeCredentials: user.Authenticators.map((authenticator) => ({
+        //   id: Buffer.from(authenticator.credentialId, "hex"),
+        //   type: "public-key",
+        //   transports: TransportSchema.parse(authenticator.transports),
+        // })),
+        timeout: Duration.TWO_MINUTE_IN_MILLISECONDS,
         authenticatorSelection: {
           residentKey: "required",
           requireResidentKey: true,
@@ -69,11 +67,8 @@ export const webAuthnRegistrationProcedures = {
       });
 
       console.log("options", options);
-      if (!(await UserChallenge().set(userId, options.challenge))) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      await UserChallenge().set(userId, options.challenge);
+
       await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
         currentDeviceName: input.deviceName,
         id: user.id,
@@ -114,20 +109,22 @@ export const webAuthnRegistrationProcedures = {
         return { verified };
       }
 
-      await DeviceAuthenticator().saveNewAuthenticator({
-        counter: registrationInfo.counter,
-        credentialBackedUp: registrationInfo.credentialBackedUp,
-        credentialDeviceType: registrationInfo.credentialDeviceType,
-        credentialId: WebAuthnUtils.bufferToHexString(
-          registrationInfo.credentialID
-        ),
-        credentialPublicKey: WebAuthnUtils.bufferToHexString(
-          registrationInfo.credentialPublicKey
-        ),
-        deviceName: user.currentDeviceName,
-        rawAttestation: input.response.attestationObject,
-        transports: input.transports,
+      await User().createUser({
         userId: user.id,
+        authenticatorInfo: {
+          counter: registrationInfo.counter,
+          credentialBackedUp: registrationInfo.credentialBackedUp,
+          credentialDeviceType: registrationInfo.credentialDeviceType,
+          credentialId: WebAuthnUtils.bufferToHexString(
+            registrationInfo.credentialID
+          ),
+          credentialPublicKey: WebAuthnUtils.bufferToHexString(
+            registrationInfo.credentialPublicKey
+          ),
+          deviceName: user.currentDeviceName,
+          rawAttestation: input.response.attestationObject,
+          transports: input.transports,
+        },
       });
 
       await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {

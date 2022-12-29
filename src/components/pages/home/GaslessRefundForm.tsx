@@ -74,7 +74,7 @@ export const GaslessRefundForm = () => {
             className="text-input"
           />
           <FormDescription
-            className="pt-2 text-sm text-neutral-400"
+            className="pt-2 text-xs text-neutral-400"
             name={form.names.email}
           >
             We&apos;ll use this to keep you updated on your refund status.
@@ -97,7 +97,7 @@ export const GaslessRefundForm = () => {
             className="text-input"
           />
           <FormDescription
-            className="pt-2 text-sm text-neutral-400"
+            className="pt-2 text-xs text-neutral-400"
             name={form.names.accessCode}
           >
             Go follow Gasless Grapes twitter to figure out how to get the access
@@ -116,7 +116,7 @@ export const GaslessRefundForm = () => {
             Transaction Links
           </FormLabel>
           <FormDescription
-            className="pb-2 text-sm text-neutral-400"
+            className="pb-2 text-xs text-neutral-400"
             name={form.names.transactions}
           >
             Be Careful! Submitting transaction that is not made by the wallet
@@ -126,7 +126,7 @@ export const GaslessRefundForm = () => {
             return (
               transaction !== null && (
                 <div key={index}>
-                  <div className="flex items-baseline">
+                  <div className="flex-row items-baseline">
                     <FormInput
                       type="url"
                       name={form.names.transactions[index] ?? ""}

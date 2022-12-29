@@ -4,9 +4,11 @@ import Head from "next/head";
 
 import { GaslessRefundForm } from "@components/pages/home/GaslessRefundForm";
 import { WagmiClientConfig } from "@components/wagmi/ClientConfig";
+import { env } from "@env/client.mjs";
 import { trpc } from "@utils/trpc";
 
 const Home: NextPage = () => {
+  console.log("env.NEXT_PUBLIC_VERCEL_URL", env.NEXT_PUBLIC_VERCEL_URL);
   return (
     <>
       <Head>

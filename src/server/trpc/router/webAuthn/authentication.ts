@@ -8,18 +8,16 @@ import {
   verifyAuthenticationResponse,
 } from "@simplewebauthn/server";
 import { TRPCError } from "@trpc/server";
+import { Duration } from "@utils/duration";
 import { jwtCookie } from "@utils/jwtCookie";
+import { ErrorMessages } from "@utils/messages";
 import { Routes } from "@utils/routes";
 import { WebAuthnUtils } from "@utils/webAuthn";
 import { randomUUID } from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
 import { AuthenticationCredentialSchema } from "types/schema/WebAuthn/AuthenticationCredentialSchema";
 import { TransportSchema } from "types/schema/WebAuthn/common";
-import {
-  TWO_MINUTE_IN_MILLISECONDS,
-  WEB_AUTHN_RP_ID,
-  WEB_AUTHN_RP_ORIGIN,
-} from ".";
+import { WEB_AUTHN_RP_ID, WEB_AUTHN_RP_ORIGIN } from ".";
 
 export const webAuthnAuthenticationProcedures = {
   getAuthenticationOptions: publicProcedure.query(async ({ ctx }) => {
@@ -28,19 +26,15 @@ export const webAuthnAuthenticationProcedures = {
       allowCredentials: [],
       userVerification: "preferred",
       rpID: Routes.hostname,
-      timeout: TWO_MINUTE_IN_MILLISECONDS,
+      timeout: Duration.TWO_MINUTE_IN_MILLISECONDS,
       extensions: {
         uvm: true,
       },
     });
     // save the challenge information
-    console.log("options", options);
     const userId = randomUUID();
-    if (!(await UserChallenge().set(userId, options.challenge))) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
+    await UserChallenge().set(userId, options.challenge);
+
     await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
       currentDeviceName: "",
       id: userId,
@@ -53,23 +47,20 @@ export const webAuthnAuthenticationProcedures = {
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session?.user;
       const challenge = await UserChallenge().get(user?.id || "");
-      console.log("challenge", challenge);
       if (!ctx.session || !user || !challenge) {
         throw new TRPCError({
           code: "BAD_REQUEST",
+          message: ErrorMessages.somethingWentWrong,
         });
       }
 
-      console.log(
-        "WebAuthnUtils.base64UrlToHexString(input.id)",
-        WebAuthnUtils.base64UrlToHexString(input.id)
-      );
       const authenticator = await DeviceAuthenticator().getAuthenticatorById(
         WebAuthnUtils.base64UrlToHexString(input.id)
       );
       if (!authenticator) {
         throw new TRPCError({
           code: "BAD_REQUEST",
+          message: ErrorMessages.unknownAuthenticator,
         });
       }
       let verification: VerifiedAuthenticationResponse;
@@ -94,6 +85,7 @@ export const webAuthnAuthenticationProcedures = {
       } catch (error) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
+          message: ErrorMessages.unknownAuthenticator,
         });
       }
 
@@ -101,7 +93,7 @@ export const webAuthnAuthenticationProcedures = {
       if (!authenticationInfo) {
         return { verified };
       }
-      console.log("authenticationInfo", authenticationInfo);
+
       await DeviceAuthenticator().updateAuthenticatorCount({
         credentialId: WebAuthnUtils.bufferToHexString(
           authenticationInfo.credentialID

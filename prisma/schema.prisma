@@ -12,15 +12,15 @@ datasource db {
 }
 
 model User {
-  id              String                @id @default(uuid())
-  name            String?
-  email           String?               @unique
-  emailVerified   DateTime?
-  imageUrl        String?
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-  authenticators  DeviceAuthenticator[]
-  userChallengeId String?
+  id                  String                @id @default(uuid())
+  name                String?
+  email               String?               @unique
+  emailVerified       DateTime?
+  imageUrl            String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  Authenticators      DeviceAuthenticator[]
+  SmartContractWallet SmartContractWallet[]
 }
 
 model DeviceAuthenticator {
@@ -40,6 +40,18 @@ model DeviceAuthenticator {
 
   @@unique([credentialId, credentialPublicKey])
   @@unique([userId, deviceName])
+}
+
+model SmartContractWallet {
+  id           String    @id @default(uuid())
+  creationHash String    @unique
+  address      String    @unique
+  createdAt    DateTime  @default(now())
+  deployedAt   DateTime?
+  type         String
+  updatedAt    DateTime  @updatedAt
+  userId       String
+  User         User      @relation(fields: [userId], references: [id])
 }
 
 model GasRefund {

@@ -52,6 +52,11 @@ export const clientSchema = z.object({
   NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN: z.string(),
   NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]),
   NEXT_PUBLIC_VERCEL_URL: z.string(),
+  NEXT_PUBLIC_ALCHEMY_MAINNET_API_KEY: z.string().min(1),
+  NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY: z.string().min(1),
+  NEXT_PUBLIC_ALCHEMY_POLYGON_API_KEY: z.string().min(1),
+  NEXT_PUBLIC_ALCHEMY_MUMBAI_API_KEY: z.string().min(1),
+  NEXT_PUBLIC_TENDERLY_API_KEY: z.string().min(1),
 });
 
 /**
@@ -61,10 +66,19 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
+  NEXT_PUBLIC_ALCHEMY_MAINNET_API_KEY:
+    process.env.NEXT_PUBLIC_ALCHEMY_MAINNET_API_KEY,
+  NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY:
+    process.env.NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY,
+  NEXT_PUBLIC_ALCHEMY_POLYGON_API_KEY:
+    process.env.NEXT_PUBLIC_ALCHEMY_POLYGON_API_KEY,
+  NEXT_PUBLIC_ALCHEMY_MUMBAI_API_KEY:
+    process.env.NEXT_PUBLIC_ALCHEMY_MUMBAI_API_KEY,
+  NEXT_PUBLIC_TENDERLY_API_KEY: process.env.NEXT_PUBLIC_TENDERLY_API_KEY,
   NEXT_PUBLIC_VERCEL_URL:
     process.env.NEXT_PUBLIC_NODE_ENV === "development"
       ? ""
-      : process.env.VERCEL_URL,
+      : process.env.VERCEL_URL || "",
   NEXT_PUBLIC_NODE_ENV: clientSchema.shape.NEXT_PUBLIC_NODE_ENV.parse(
     process.env.NEXT_PUBLIC_NODE_ENV
   ),

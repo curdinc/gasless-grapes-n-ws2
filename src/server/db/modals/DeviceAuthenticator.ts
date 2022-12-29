@@ -7,7 +7,7 @@ export function DeviceAuthenticator() {
       data: Prisma.DeviceAuthenticatorUncheckedCreateInput
     ) {
       const authenticator = await prisma.deviceAuthenticator.create({
-        data: data,
+        data,
         select: {
           id: true,
         },
