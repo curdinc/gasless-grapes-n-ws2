@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
       cookieString: request.headers.get("cookie") ?? undefined,
     });
     if (user?.state !== "loggedIn") {
-      const url = new URL(Routes.signIn, request.nextUrl.origin);
+      const url = new URL(Routes.signUp, request.nextUrl.origin);
       url.searchParams.set(
         Routes.authRedirectQueryParam,
         request.nextUrl.pathname
