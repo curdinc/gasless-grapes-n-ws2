@@ -50,7 +50,12 @@ export const serverEnv = {
 export const clientSchema = z.object({
   NEXT_PUBLIC_UPSTASH_REDIS_REST_URL: z.string(),
   NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN: z.string(),
-  NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]),
+  NEXT_PUBLIC_NODE_ENV: z.enum([
+    "development",
+    "test",
+    "staging",
+    "production",
+  ]),
   NEXT_PUBLIC_VERCEL_URL: z.string(),
   NEXT_PUBLIC_ALCHEMY_MAINNET_API_KEY: z.string().min(1),
   NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY: z.string().min(1),

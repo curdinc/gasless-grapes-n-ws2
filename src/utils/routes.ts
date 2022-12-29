@@ -1,16 +1,12 @@
 import { env } from "@env/client.mjs";
-import type {
-  AlchemyChainType,
-  SupportedChainType,
-  TenderlyChainType,
-} from "types/schema/blockchain/chains";
 
 export class Routes {
-  static hostname = env.NEXT_PUBLIC_VERCEL_URL
-    ? env.NEXT_PUBLIC_VERCEL_URL
-    : env.NEXT_PUBLIC_NODE_ENV === "development"
-    ? `localhost`
-    : "gaslessgrapes.com";
+  static hostname =
+    env.NEXT_PUBLIC_NODE_ENV === "staging"
+      ? env.NEXT_PUBLIC_VERCEL_URL
+      : env.NEXT_PUBLIC_NODE_ENV === "development"
+      ? `localhost`
+      : "gaslessgrapes.com";
   static origin = `https://${Routes.hostname}`;
   static getAbsolutePath(path: string, query?: Record<string, string>) {
     const url = new URL(path, Routes.origin);
