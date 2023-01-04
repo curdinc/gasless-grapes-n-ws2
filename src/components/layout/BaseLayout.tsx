@@ -25,9 +25,9 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
           🍇 Gasless Grapes
         </Link>
         {router.pathname === Routes.home && (
-          <Link className="link mr-3" href={Routes.wallet}>
+          <a className="link mr-3" href={Routes.wallet}>
             Try Alpha
-          </Link>
+          </a>
         )}
         {router.pathname.startsWith(Routes.wallet) && <LogoutButton />}
       </nav>

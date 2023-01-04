@@ -18,10 +18,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  console.log('request.nextUrl.pathname', request.nextUrl.pathname)
   if (Routes.authProtectedPages.includes(request.nextUrl.pathname)) {
     const { user } = await getServerAuthSession({
       cookieString: request.headers.get("cookie") ?? undefined,
     });
+    console.log("user", user);
     if (user?.state !== "loggedIn") {
       const url = new URL(Routes.signUp, request.nextUrl.origin);
       url.searchParams.set(

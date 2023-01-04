@@ -65,11 +65,7 @@ export const RegisterDeviceButton = <T extends true | false>(
       const verificationResult = await verifyDeviceRegistration(
         attestationResponse
       );
-      WebAuthnUtils.redirectUser(
-        redirectUrl,
-        verificationResult.verified,
-        router
-      );
+      WebAuthnUtils.redirectUser(redirectUrl, verificationResult.verified);
     } catch (e) {
       console.error("Error verifying device credentials", e);
       setError(ErrorMessages.somethingWentWrong);

@@ -1,4 +1,3 @@
-import type { NextRouter } from "next/router";
 import { Routes } from "./routes";
 
 export class WebAuthnUtils {
@@ -11,20 +10,16 @@ export class WebAuthnUtils {
   static base64UrlToHexString(value: string): string {
     return Buffer.from(value, "base64url").toString("hex");
   }
-  static redirectUser(
-    redirectUrl: unknown,
-    verified: boolean,
-    router: NextRouter
-  ) {
+  static redirectUser(redirectUrl: unknown, verified: boolean) {
     if (typeof redirectUrl === "string") {
       console.log("redirecting to ", redirectUrl);
-      router.push(redirectUrl);
+      location.href = redirectUrl;
     } else if (verified) {
       console.log("redirecting to wallet");
-      router.push(Routes.wallet);
+      location.href = Routes.wallet;
     } else if (!verified) {
       console.log("redirecting to homepage");
-      router.push(Routes.home);
+      location.href = Routes.home;
     }
   }
 }
