@@ -1,4 +1,5 @@
-import WalletAccountView from "@components/pages/wallet/WalletAccountView";
+import { WalletLayout } from "@components/layout/WalletLayout";
+import { BasicTokenView } from "@components/pages/wallet/Tokens/BasicTokenView";
 import { Spinner } from "@components/ui/progress/Spinner";
 import { trpc } from "@utils/trpc";
 
@@ -26,13 +27,8 @@ export default function WalletPage() {
     );
   }
   return (
-    <div className="py-2 px-4">
-      {/* <h1 className="font-heading text-lg font-bold">Account</h1> */}
-      <h2 className="text-sm text-neutral-400">Net Worth</h2>
-      <p className="mt-3 text-3xl font-bold">$1,022.02</p>
-      <div className="mt-10">
-        <WalletAccountView />
-      </div>
-    </div>
+    <WalletLayout>
+      <BasicTokenView />
+    </WalletLayout>
   );
 }

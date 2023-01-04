@@ -5,7 +5,7 @@ import { jwtCookie } from "@utils/jwtCookie";
 import { randomUUID } from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
 import { UserRegistrationSchema } from "types/schema/registration/user";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const userRouter = router({
   verifyHandle: publicProcedure
@@ -40,5 +40,9 @@ export const userRouter = router({
   }),
   me: publicProcedure.query(async ({ ctx }) => {
     return ctx.session?.user ?? null;
+  }),
+  logout: protectedProcedure.mutation(async ({ ctx }) => {
+    await jwtCookie.expire(ctx.res, AUTH_COOKIE_NAME);
+    return true;
   }),
 });

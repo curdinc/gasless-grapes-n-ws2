@@ -32,6 +32,7 @@ export class Routes {
   static signIn = `${Routes.authBasePath}/sign-in`;
   static signUp = `${Routes.authBasePath}/sign-up`;
   static authRedirectQueryParam = "redirectUrl";
+  static authErrorQueryParam = "errorMsg";
 
   // New User
   static userNameQueryParam = "username";

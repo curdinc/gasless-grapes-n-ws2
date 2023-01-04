@@ -21,6 +21,12 @@ const config = {
         port: "",
         pathname: "/images/assets/**",
       },
+      {
+        protocol: "https",
+        hostname: "tokens.1inch.io",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

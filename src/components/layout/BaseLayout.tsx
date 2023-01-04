@@ -1,4 +1,4 @@
-import { env } from "@env/client.mjs";
+import { LogoutButton } from "@components/pages/wallet/LogoutButton";
 import { Inter, Nunito } from "@next/font/google";
 import { Routes } from "@utils/routes";
 import Link from "next/link";
@@ -24,12 +24,12 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
         <Link href={Routes.home} className="font-heading text-xl">
           🍇 Gasless Grapes
         </Link>
-        {router.pathname === Routes.home &&
-          env.NEXT_PUBLIC_NODE_ENV === "development" && (
-            <Link className="link mr-2" href={Routes.wallet}>
-              Try Alpha
-            </Link>
-          )}
+        {router.pathname === Routes.home && (
+          <Link className="link mr-3" href={Routes.wallet}>
+            Try Alpha
+          </Link>
+        )}
+        {router.pathname.startsWith(Routes.wallet) && <LogoutButton />}
       </nav>
       {children}
     </main>

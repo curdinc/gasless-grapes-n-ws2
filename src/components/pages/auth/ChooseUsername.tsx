@@ -16,7 +16,6 @@ export const ChooseUsername = () => {
   const router = useRouter();
   const redirectUrl = router.query[Routes.authRedirectQueryParam];
   const { mutateAsync: verifyHandle } = trpc.user.verifyHandle.useMutation();
-
   const form = useFormState({
     defaultValues: { handle: "", email: "", genericError: "" },
   });

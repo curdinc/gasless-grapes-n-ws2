@@ -5,7 +5,11 @@ import Image from "next/image";
 import type { TokenDetailType } from "types/schema/alchemy/tokenApi";
 import { productionChains } from "types/schema/blockchain/chains";
 
-export const TokensView = ({ walletAddress }: { walletAddress?: string }) => {
+export const AutoTokensView = ({
+  walletAddress,
+}: {
+  walletAddress?: string;
+}) => {
   console.log("walletAddress", walletAddress);
   const { data: tokens } = trpc.token.getBalance.useQuery(
     {
