@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith(Routes.authBasePath)) {
+  if (Routes.authProtectedPages.includes(request.nextUrl.pathname)) {
     const { user } = await getServerAuthSession({
       cookieString: request.headers.get("cookie") ?? undefined,
     });
@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
         Routes.authRedirectQueryParam
       );
       return NextResponse.redirect(
-        new URL(redirectUrl ?? Routes.home, request.nextUrl.origin)
+        new URL(redirectUrl ?? Routes.wallet, request.nextUrl.origin)
       );
     }
   }

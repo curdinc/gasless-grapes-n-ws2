@@ -27,12 +27,13 @@ export class Routes {
   static settings = `${Routes.wallet}/settings`;
 
   // Auth
-  static authProtectedPages = [Routes.wallet];
   static authBasePath = "/auth";
   static signIn = `${Routes.authBasePath}/sign-in`;
   static signUp = `${Routes.authBasePath}/sign-up`;
   static authRedirectQueryParam = "redirectUrl";
   static authErrorQueryParam = "errorMsg";
+  static authProtectedPages = [Routes.wallet];
+  static authPages = [Routes.signIn, Routes.signUp, Routes.newUser];
 
   // New User
   static userNameQueryParam = "username";

@@ -25,10 +25,14 @@ export const RegisterDeviceButton = <T extends true | false>(
   const router = useRouter();
   const redirectUrl = router.query[Routes.authRedirectQueryParam];
 
-  const { mutateAsync: verifyDeviceRegistration } =
-    trpc.webAuthn.verifyRegistration.useMutation();
-
   const utils = trpc.useContext();
+
+  const { mutateAsync: verifyDeviceRegistration } =
+    trpc.webAuthn.verifyRegistration.useMutation({
+      onSuccess() {
+        utils.user.me.refetch();
+      },
+    });
 
   const registerDevice = async () => {
     let registrationOptions: PublicKeyCredentialCreationOptionsJSON;

@@ -17,10 +17,13 @@ export class WebAuthnUtils {
     router: NextRouter
   ) {
     if (typeof redirectUrl === "string") {
+      console.log("redirecting to ", redirectUrl);
       router.push(redirectUrl);
     } else if (verified) {
+      console.log("redirecting to wallet");
       router.push(Routes.wallet);
     } else if (!verified) {
+      console.log("redirecting to homepage");
       router.push(Routes.home);
     }
   }

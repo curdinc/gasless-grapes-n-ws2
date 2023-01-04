@@ -5,18 +5,7 @@ import { useRouter } from "next/router";
 
 export default function NewUserPage() {
   const router = useRouter();
-  const { user, isLoading } = useUser();
-
-  if (!isLoading && !user) {
-    console.log("pushing user to sign up");
-    router.push(Routes.signUp);
-  }
-  if (user && user.state === "loggedIn") {
-    router.push(Routes.wallet);
-  }
-  if (user && user.state === "pendingAuthentication") {
-    router.push(Routes.signIn);
-  }
+  const { user } = useUser();
 
   return (
     <div className={"flex-1 items-center justify-center"}>
