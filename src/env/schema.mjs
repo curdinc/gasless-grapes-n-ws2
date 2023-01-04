@@ -56,6 +56,7 @@ export const clientSchema = z.object({
     "staging",
     "production",
   ]),
+  // todo: Move this to the server env
   NEXT_PUBLIC_VERCEL_URL: z.string(),
   NEXT_PUBLIC_ALCHEMY_MAINNET_API_KEY: z.string().min(1),
   NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY: z.string().min(1),

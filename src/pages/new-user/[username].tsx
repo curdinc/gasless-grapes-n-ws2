@@ -8,6 +8,7 @@ export default function NewUserPage() {
   const { user, isLoading } = useUser();
 
   if (!isLoading && !user) {
+    console.log("pushing user to sign up");
     router.push(Routes.signUp);
   }
   if (user && user.state === "loggedIn") {
