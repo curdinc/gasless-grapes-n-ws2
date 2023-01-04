@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  if (Routes.authProtectedPages.includes(request.nextUrl.pathname)) {
+  if (Routes.authPages.includes(request.nextUrl.pathname)) {
     const { user } = await getServerAuthSession({
       cookieString: request.headers.get("cookie") ?? undefined,
     });
