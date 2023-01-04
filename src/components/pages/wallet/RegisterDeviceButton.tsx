@@ -26,15 +26,7 @@ export const RegisterDeviceButton = <T extends true | false>(
   const redirectUrl = router.query[Routes.authRedirectQueryParam];
 
   const { mutateAsync: verifyDeviceRegistration } =
-    trpc.webAuthn.verifyRegistration.useMutation({
-      onSuccess(verificationResult) {
-        WebAuthnUtils.redirectUser(
-          redirectUrl,
-          verificationResult.verified,
-          router
-        );
-      },
-    });
+    trpc.webAuthn.verifyRegistration.useMutation();
 
   const utils = trpc.useContext();
 
@@ -51,8 +43,7 @@ export const RegisterDeviceButton = <T extends true | false>(
     let attestationResponse: RegistrationCredentialJSON;
     try {
       if (props.isRegisteringNewUser) {
-        const canRegisterNewUser =
-          await utils.user.canRegisterNewUser.fetch();
+        const canRegisterNewUser = await utils.user.canRegisterNewUser.fetch();
         if (!canRegisterNewUser) {
           props.onNewUserError({
             error: new Error(ErrorMessages.userTookTooLong),
@@ -67,7 +58,14 @@ export const RegisterDeviceButton = <T extends true | false>(
     }
 
     try {
-      await verifyDeviceRegistration(attestationResponse);
+      const verificationResult = await verifyDeviceRegistration(
+        attestationResponse
+      );
+      WebAuthnUtils.redirectUser(
+        redirectUrl,
+        verificationResult.verified,
+        router
+      );
     } catch (e) {
       console.error("Error verifying device credentials", e);
       setError(ErrorMessages.somethingWentWrong);
