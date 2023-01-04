@@ -41,7 +41,8 @@ class JwtCookie {
       token,
       new TextEncoder().encode(this.secret)
     );
-    return schema.parse(payload);
+    const parsedPayload = schema.safeParse(payload);
+    return parsedPayload.success ? parsedPayload.data : null;
   }
 
   async set<T extends jose.JWTPayload>(
