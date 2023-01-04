@@ -28,6 +28,7 @@ export function DeviceAuthenticator() {
           User: {
             select: {
               id: true,
+              handle: true,
             },
           },
         },
@@ -45,10 +46,10 @@ export function DeviceAuthenticator() {
       await prisma.deviceAuthenticator.update({
         where: {
           credentialId,
-          },
-          data: {
-              counter: newCount,
-          }
+        },
+        data: {
+          counter: newCount,
+        },
       });
     },
   });

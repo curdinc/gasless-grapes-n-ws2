@@ -10,13 +10,12 @@ import {
 import { TRPCError } from "@trpc/server";
 import { Duration } from "@utils/duration";
 import { jwtCookie } from "@utils/jwtCookie";
-import { ErrorMessages } from "@utils/messages";
 import { Routes } from "@utils/routes";
 import { WebAuthnUtils } from "@utils/webAuthn";
-import * as crypto from "crypto";
+import { randomUUID } from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
+import { TransportSchema } from "types/schema/WebAuthn/common";
 import { RegisterCredentialSchema } from "types/schema/WebAuthn/RegistrationCredentialSchema";
-import { z } from "zod";
 import {
   ECDSA_W_SHA256_ALG,
   WEB_AUTHN_RP_ID,
@@ -25,58 +24,53 @@ import {
 } from ".";
 
 export const webAuthnRegistrationProcedures = {
-  getRegistrationOptions: publicProcedure
-    .input(
-      z.object({
-        deviceName: z
-          .string()
-          .max(64, { message: ErrorMessages.maxUsernameLength }),
-        email: z.string().email().optional(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const userId = crypto.randomUUID();
-      const user = await User().createRegistration({
-        userId,
-        email: input.email,
+  getRegistrationOptions: publicProcedure.query(async ({ ctx }) => {
+    const user = ctx.session?.user;
+    if (!user) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
       });
-      const options = generateRegistrationOptions({
-        rpName: WEB_AUTHN_RP_NAME,
-        rpID: Routes.hostname,
-        userID: user.id,
-        userName: input.deviceName,
-        attestationType: "direct",
-        // Prevent users from re-registering existing authenticators
-        // excludeCredentials: user.Authenticators.map((authenticator) => ({
-        //   id: Buffer.from(authenticator.credentialId, "hex"),
-        //   type: "public-key",
-        //   transports: TransportSchema.parse(authenticator.transports),
-        // })),
-        timeout: Duration.TWO_MINUTE_IN_MILLISECONDS,
-        authenticatorSelection: {
-          residentKey: "required",
-          requireResidentKey: true,
-          userVerification: "preferred",
-          authenticatorAttachment: "platform",
-        },
-        supportedAlgorithmIDs: [ECDSA_W_SHA256_ALG],
-        extensions: {
-          credProps: true,
-          uvm: true,
-        },
-      });
+    }
 
-      console.log("options", options);
-      await UserChallenge().set(userId, options.challenge);
+    const device = await User().getAuthenticators({ userId: user.id });
 
-      await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
-        currentDeviceName: input.deviceName,
-        id: user.id,
-        state: "pendingRegistration",
-      });
+    const options = generateRegistrationOptions({
+      rpName: WEB_AUTHN_RP_NAME,
+      rpID: Routes.hostname,
+      userID: user.id,
+      userName: user.handle,
+      attestationType: "direct",
+      // Prevent users from re-registering existing authenticators
+      excludeCredentials: device?.Authenticators.map((authenticator) => ({
+        id: Buffer.from(authenticator.credentialId, "hex"),
+        type: "public-key",
+        transports: TransportSchema.parse(authenticator.transports),
+      })),
+      timeout: Duration.TWO_MINUTE_IN_MILLISECONDS,
+      authenticatorSelection: {
+        residentKey: "required",
+        requireResidentKey: true,
+        userVerification: "preferred",
+        authenticatorAttachment: "platform",
+      },
+      supportedAlgorithmIDs: [ECDSA_W_SHA256_ALG],
+      extensions: {
+        credProps: true,
+        uvm: true,
+      },
+    });
 
-      return options;
-    }),
+    console.log("options", options);
+    await UserChallenge().set(user.id, options.challenge);
+
+    await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
+      ...user,
+      currentDeviceName: randomUUID(),
+      state: "pendingRegistration",
+    });
+
+    return options;
+  }),
   verifyRegistration: publicProcedure
     .input(RegisterCredentialSchema)
     .mutation(async ({ input, ctx }) => {
@@ -109,27 +103,29 @@ export const webAuthnRegistrationProcedures = {
         return { verified };
       }
 
-      await User().createUser({
-        userId: user.id,
-        authenticatorInfo: {
-          counter: registrationInfo.counter,
-          credentialBackedUp: registrationInfo.credentialBackedUp,
-          credentialDeviceType: registrationInfo.credentialDeviceType,
-          credentialId: WebAuthnUtils.bufferToHexString(
-            registrationInfo.credentialID
-          ),
-          credentialPublicKey: WebAuthnUtils.bufferToHexString(
-            registrationInfo.credentialPublicKey
-          ),
-          deviceName: user.currentDeviceName,
-          rawAttestation: input.response.attestationObject,
-          transports: input.transports,
-        },
-      });
+      if (user.state === "pendingRegistration") {
+        await User().create({
+          userId: user.id,
+          userHandle: user.handle,
+          authenticatorInfo: {
+            counter: registrationInfo.counter,
+            credentialBackedUp: registrationInfo.credentialBackedUp,
+            credentialDeviceType: registrationInfo.credentialDeviceType,
+            credentialId: WebAuthnUtils.bufferToHexString(
+              registrationInfo.credentialID
+            ),
+            credentialPublicKey: WebAuthnUtils.bufferToHexString(
+              registrationInfo.credentialPublicKey
+            ),
+            deviceName: user.currentDeviceName,
+            rawAttestation: input.response.attestationObject,
+            transports: input.transports,
+          },
+        });
+      }
 
       await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
-        currentDeviceName: user.currentDeviceName,
-        id: user.id,
+        ...user,
         state: "loggedIn",
       });
       return { verified };

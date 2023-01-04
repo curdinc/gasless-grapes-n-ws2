@@ -8,8 +8,18 @@ import { ErrorMessages } from "@utils/messages";
 import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import { useState } from "react";
+
+const redirectUser = (redirectUrl: unknown, verified: boolean) => {
+  if (typeof redirectUrl === "string") {
+    router.push(redirectUrl);
+  } else if (verified) {
+    router.push(Routes.wallet);
+  } else if (!verified) {
+    router.push(Routes.home);
+  }
+};
 
 export default function SignIn() {
   const router = useRouter();
@@ -23,12 +33,8 @@ export default function SignIn() {
         console.log("error", error.shape);
         setError(error.message);
       },
-      onSuccess() {
-        if (typeof redirectUrl === "string") {
-          router.push(redirectUrl);
-          return;
-        }
-        router.push(Routes.home);
+      onSuccess({ verified }) {
+        redirectUser(redirectUrl, verified);
       },
     });
   const [error, setError] = useState("");
@@ -51,7 +57,7 @@ export default function SignIn() {
     } catch (e) {
       let errorMessage = ErrorMessages.somethingWentWrong;
       if (e instanceof Error) {
-        if (e.message.includes(ErrorMessages.webAuthnTimeOutOrCancel)) {
+        if (e.message.includes(ErrorMessages.webAuthn.timeoutOrCancel)) {
           errorMessage = ErrorMessages.userDeclinedRegistrationOrTimeout;
         } else {
           errorMessage = e.message;
@@ -64,8 +70,8 @@ export default function SignIn() {
   };
 
   return (
-    <div className={"flex flex-1 items-center justify-center"}>
-      <div className="flex max-w-md flex-col  rounded-xl  p-14">
+    <div className={"flex-1 items-center justify-center"}>
+      <div className="max-w-md flex-col  rounded-xl  p-14">
         <h1 className="">Sign In </h1>
         <p className="pt-1 text-sm text-neutral-400">
           Verify your device to continue

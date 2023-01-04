@@ -1,4 +1,8 @@
-import { startRegistration } from "@simplewebauthn/browser";
+import {
+  browserSupportsWebAuthn,
+  startAuthentication,
+  startRegistration,
+} from "@simplewebauthn/browser";
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   RegistrationCredentialJSON,
@@ -15,22 +19,64 @@ import {
   FormSubmit,
   useFormState,
 } from "ariakit/form";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 
+const redirectUser = (redirectUrl: unknown, verified: boolean) => {
+  if (typeof redirectUrl === "string") {
+    router.push(redirectUrl);
+  } else if (verified) {
+    router.push(Routes.wallet);
+  } else if (!verified) {
+    router.push(Routes.home);
+  }
+};
 export const SignUpForm = () => {
   const router = useRouter();
   const redirectUrl = router.query[Routes.authRedirectQueryParam];
+  const { mutate: authenticateDevice } =
+    trpc.webAuthn.verifyAuthentication.useMutation({
+      onError(data) {
+        console.error(data);
+      },
+      onSuccess(verificationResult) {
+        redirectUser(redirectUrl, verificationResult.verified);
+      },
+    });
+  const { mutateAsync: verifyDeviceRegistration } =
+    trpc.webAuthn.verifyRegistration.useMutation({
+      onSuccess(verificationResult) {
+        redirectUser(redirectUrl, verificationResult.verified);
+      },
+    });
   const form = useFormState({
     defaultValues: { deviceName: "", email: "", genericError: "" },
   });
   const utils = trpc.useContext();
+  trpc.webAuthn.getAuthenticationOptions.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    async onSuccess(authOptions) {
+      const isAutoFillAvailable = await browserSupportsWebAuthn();
+      console.log("isAutoFillAvailable", isAutoFillAvailable);
+      if (isAutoFillAvailable) {
+        try {
+          console.log("started authentication");
+          const attestationResponse = await startAuthentication(
+            authOptions,
+            true
+          );
+          authenticateDevice(attestationResponse);
+        } catch (e) {
+          console.error("Error authenticating user on sign-up", e);
+        }
+      }
+    },
+  });
+
   form.useSubmit(async () => {
     let registrationOptions: PublicKeyCredentialCreationOptionsJSON;
     try {
-      registrationOptions = await utils.webAuthn.getRegistrationOptions.fetch({
-        deviceName: form.values.deviceName,
-        email: form.values.email,
-      });
+      registrationOptions = await utils.webAuthn.getRegistrationOptions.fetch();
     } catch (e) {
       console.error("Error Fetching registration options", e);
       form.setErrors({
@@ -48,36 +94,24 @@ export const SignUpForm = () => {
         genericError: ErrorMessages.userDeclinedRegistrationOrTimeout,
       });
       throw e;
-
-      return;
     }
 
     try {
       await verifyDeviceRegistration(attestationResponse);
     } catch (e) {
-      console.error("Error verifying device credentials");
-      form.setErrors({
-        genericError: ErrorMessages.userDeclinedRegistrationOrTimeout,
-      });
-      return;
+      console.error("Error verifying device credentials", e);
+      if (e instanceof Error) {
+        form.setErrors({
+          genericError: e.message,
+        });
+      } else {
+        form.setErrors({
+          genericError: ErrorMessages.somethingWentWrong,
+        });
+      }
+      throw e;
     }
   });
-
-  const { mutateAsync: verifyDeviceRegistration } =
-    trpc.webAuthn.verifyRegistration.useMutation({
-      onError(error) {
-        console.error("registration error", error);
-      },
-      onSuccess(verificationResult) {
-        if (typeof redirectUrl === "string") {
-          router.push(redirectUrl);
-        } else if (verificationResult.verified === true) {
-          router.push(Routes.wallet);
-        } else if (verificationResult.verified === false) {
-          router.push(Routes.home);
-        }
-      },
-    });
 
   return (
     <Form state={form} aria-labelledby="sign-up">
@@ -94,7 +128,7 @@ export const SignUpForm = () => {
           name={form.names.deviceName}
           required
           placeholder="iPhone"
-          className="text-input"
+          className="text-input peer"
         />
         <FormDescription
           className="pt-2 text-xs text-neutral-400"

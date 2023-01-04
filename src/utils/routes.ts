@@ -5,7 +5,7 @@ export class Routes {
     env.NEXT_PUBLIC_NODE_ENV === "staging"
       ? env.NEXT_PUBLIC_VERCEL_URL
       : env.NEXT_PUBLIC_NODE_ENV === "development"
-      ? `localhost`
+      ? `b588-174-91-116-181.ngrok.io`
       : "gaslessgrapes.com";
   static origin = `https://${Routes.hostname}`;
   static getAbsolutePath(path: string, query?: Record<string, string>) {
@@ -21,6 +21,10 @@ export class Routes {
   // pages
   static home = "/";
   static wallet = "/wallet";
+  static newUser = (userHandle: string) => `/new-user/${userHandle}`;
+  static tokens = `${Routes.wallet}/tokens`;
+  static transactions = `${Routes.wallet}/transactions`;
+  static settings = `${Routes.wallet}/settings`;
 
   // Auth
   static authProtectedPages = [Routes.wallet];
@@ -28,4 +32,7 @@ export class Routes {
   static signIn = `${Routes.authBasePath}/sign-in`;
   static signUp = `${Routes.authBasePath}/sign-up`;
   static authRedirectQueryParam = "redirectUrl";
+
+  // New User
+  static userNameQueryParam = "username";
 }

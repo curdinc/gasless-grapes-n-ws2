@@ -38,6 +38,7 @@ export const webAuthnAuthenticationProcedures = {
     await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
       currentDeviceName: "",
       id: userId,
+      handle: "",
       state: "pendingAuthentication",
     });
     return options;
@@ -103,6 +104,7 @@ export const webAuthnAuthenticationProcedures = {
       await jwtCookie.set<AuthUserType>(ctx.res, AUTH_COOKIE_NAME, {
         currentDeviceName: authenticator.deviceName,
         id: authenticator.User.id,
+        handle: authenticator.User.handle,
         state: "loggedIn",
       });
       return { verified };

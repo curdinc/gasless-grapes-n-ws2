@@ -3,6 +3,7 @@ import type { SiweNonceType, SiweType } from "./Siwe/SiweSchema";
 
 export const AuthUserSchema = z.object({
   id: z.string().uuid(),
+  handle: z.string(),
   currentDeviceName: z.string(),
   state: z.enum(["loggedIn", "pendingRegistration", "pendingAuthentication"]),
 });

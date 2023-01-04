@@ -4,11 +4,13 @@ import { authRouter } from "./routerReference";
 import { siweRouter } from "./signInWithEth";
 import { smartContractWalletRouter } from "./smartContractWallet";
 import { tokenRouter } from "./token";
+import { userRouter } from "./userRegistration";
 import { webAuthnRouter } from "./webAuthn";
 
 export const appRouter = router({
   auth: authRouter,
   webAuthn: webAuthnRouter,
+  user: userRouter,
   siwe: siweRouter,
   gasRefund: gasRefundRouter,
   smartContractWallet: smartContractWalletRouter,

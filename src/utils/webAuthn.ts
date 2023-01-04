@@ -1,3 +1,6 @@
+import type { NextRouter } from "next/router";
+import { Routes } from "./routes";
+
 export class WebAuthnUtils {
   static bufferToHexString(value: Buffer): string {
     return value.toString("hex");
@@ -7,5 +10,18 @@ export class WebAuthnUtils {
   }
   static base64UrlToHexString(value: string): string {
     return Buffer.from(value, "base64url").toString("hex");
+  }
+  static redirectUser(
+    redirectUrl: unknown,
+    verified: boolean,
+    router: NextRouter
+  ) {
+    if (typeof redirectUrl === "string") {
+      router.push(redirectUrl);
+    } else if (verified) {
+      router.push(Routes.wallet);
+    } else if (!verified) {
+      router.push(Routes.home);
+    }
   }
 }
