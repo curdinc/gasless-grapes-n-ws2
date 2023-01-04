@@ -67,7 +67,7 @@ class JwtCookie {
       "Set-Cookie",
       serialize(name, "", {
         ...this.baseCookieSetting,
-        expires: dayjs().subtract(1, "days").toDate(),
+        maxAge: 0,
       })
     );
   }
