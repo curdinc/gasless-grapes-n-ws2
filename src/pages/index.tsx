@@ -1,11 +1,8 @@
+import { Button } from "@components/ui/input/Button";
+import { Routes } from "@utils/routes";
 import { type NextPage } from "next";
-import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-
-import { GaslessRefundForm } from "@components/pages/home/GaslessRefundForm";
-import { WagmiClientConfig } from "@components/wagmi/ClientConfig";
-import { env } from "@env/client.mjs";
-import { trpc } from "@utils/trpc";
+import router from "next/router";
 
 const Home: NextPage = () => {
   return (
@@ -19,19 +16,26 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className={"mx-auto max-w-lg p-5"}>
-          <h1
-            className={"font-heading text-3xl font-extrabold text-primary-300"}
+        <div className={"mx-auto max-w-lg p-10"}>
+          <div className="w-full items-center space-y-10">
+            <div className="text-8xl md:text-9xl">🍇</div>
+            <h1
+              className={
+                "text-center font-heading text-3xl font-bold text-primary-300 "
+              }
+            >
+              Make your devices your most secure hardware wallet.
+            </h1>
+          </div>
+
+          <Button
+            className="btn mt-10 text-lg"
+            onClick={() => {
+              router.push(Routes.wallet);
+            }}
           >
-            The hardware wallet you already have.
-          </h1>
-          <p className="text-md py-2 text-opacity-70">
-            Say goodbye to seed phrases and gas fees.
-          </p>
-          {/* <EmailForm /> */}
-          <WagmiClientConfig>
-            <GaslessRefundForm />
-          </WagmiClientConfig>
+            Secure your assets
+          </Button>
         </div>
       </main>
     </>
@@ -39,27 +43,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = trpc.auth.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
-
-  return (
-    <div className={"p-5"}>
-      <p className={"p-5"}>
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className={"p-5"}
-        onClick={sessionData ? () => signOut() : () => signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
-    </div>
-  );
-};

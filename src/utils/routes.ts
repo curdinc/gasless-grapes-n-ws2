@@ -5,7 +5,7 @@ export class Routes {
     env.NEXT_PUBLIC_NODE_ENV === "staging"
       ? env.NEXT_PUBLIC_VERCEL_URL
       : env.NEXT_PUBLIC_NODE_ENV === "development"
-      ? `b588-174-91-116-181.ngrok.io`
+      ? `localhost`
       : "gaslessgrapes.com";
   static origin = `https://${Routes.hostname}`;
   static getAbsolutePath(path: string, query?: Record<string, string>) {
