@@ -1,3 +1,4 @@
+import { BaseLayout } from "@components/layout/BaseLayout";
 import { Button } from "@components/ui/input/Button";
 import { startAuthentication } from "@simplewebauthn/browser";
 import type {
@@ -90,3 +91,7 @@ export default function SignIn() {
     </div>
   );
 }
+
+SignIn.getLayout = function getLayout(page: React.ReactElement) {
+  return <BaseLayout>{page}</BaseLayout>;
+};

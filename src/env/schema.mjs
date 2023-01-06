@@ -9,6 +9,7 @@ export const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
   DATABASE_SHADOW_URL: z.string().url(),
   NODE_ENV: z.enum(["development", "test", "production"]),
+  VERCEL_URL: z.string(),
   JWT_SECRET: z.string().min(1),
   NEXTAUTH_SECRET:
     process.env.NODE_ENV === "production"
@@ -17,7 +18,7 @@ export const serverSchema = z.object({
   NEXTAUTH_URL: z.preprocess(
     // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
     // Since NextAuth.js automatically uses the VERCEL_URL if present.
-    (str) => process.env.VERCEL_URL ?? str,
+    (str) => process.env.NEXTAUTH_URL ?? process.env.VERCEL_URL ?? str,
     // VERCEL_URL doesn't include `https` so it cant be validated as a URL
     process.env.VERCEL ? z.string() : z.string().url()
   ),
@@ -35,6 +36,7 @@ export const serverEnv = {
   DATABASE_URL: process.env.DATABASE_URL,
   DATABASE_SHADOW_URL: process.env.DATABASE_SHADOW_URL,
   NODE_ENV: process.env.NODE_ENV,
+  VERCEL_URL: process.env.VERCEL_URL,
   JWT_SECRET: process.env.JWT_SECRET,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
@@ -50,14 +52,8 @@ export const serverEnv = {
 export const clientSchema = z.object({
   NEXT_PUBLIC_UPSTASH_REDIS_REST_URL: z.string(),
   NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN: z.string(),
-  NEXT_PUBLIC_NODE_ENV: z.enum([
-    "development",
-    "test",
-    "staging",
-    "production",
-  ]),
-  // todo: Move this to the server env
-  NEXT_PUBLIC_VERCEL_URL: z.string(),
+  NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: z.string().min(1),
+  NEXT_PUBLIC_WALLET_CONNECT_RELAY_URL: z.string().min(1),
   NEXT_PUBLIC_ALCHEMY_MAINNET_API_KEY: z.string().min(1),
   NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY: z.string().min(1),
   NEXT_PUBLIC_ALCHEMY_POLYGON_API_KEY: z.string().min(1),
@@ -81,15 +77,12 @@ export const clientEnv = {
   NEXT_PUBLIC_ALCHEMY_MUMBAI_API_KEY:
     process.env.NEXT_PUBLIC_ALCHEMY_MUMBAI_API_KEY,
   NEXT_PUBLIC_TENDERLY_API_KEY: process.env.NEXT_PUBLIC_TENDERLY_API_KEY,
-  NEXT_PUBLIC_VERCEL_URL:
-    process.env.NEXT_PUBLIC_NODE_ENV === "development"
-      ? ""
-      : process.env.VERCEL_URL || "",
-  NEXT_PUBLIC_NODE_ENV: clientSchema.shape.NEXT_PUBLIC_NODE_ENV.parse(
-    process.env.NEXT_PUBLIC_NODE_ENV
-  ),
   NEXT_PUBLIC_UPSTASH_REDIS_REST_URL:
     process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL,
   NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN:
     process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN,
+  NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID:
+    process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+  NEXT_PUBLIC_WALLET_CONNECT_RELAY_URL:
+    process.env.NEXT_PUBLIC_WALLET_CONNECT_RELAY_URL,
 };

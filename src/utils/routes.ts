@@ -1,15 +1,6 @@
-import { env } from "@env/client.mjs";
-
 export class Routes {
-  static hostname =
-    env.NEXT_PUBLIC_NODE_ENV === "staging"
-      ? env.NEXT_PUBLIC_VERCEL_URL
-      : env.NEXT_PUBLIC_NODE_ENV === "development"
-      ? `localhost`
-      : "gaslessgrapes.com";
-  static origin = `https://${Routes.hostname}`;
   static getAbsolutePath(path: string, query?: Record<string, string>) {
-    const url = new URL(path, Routes.origin);
+    const url = new URL(path, location.origin);
     if (query) {
       Object.keys(query).map((key) => {
         url.searchParams.set(key, query[key] as string);
@@ -20,10 +11,13 @@ export class Routes {
 
   // pages
   static home = "/";
+
+  // Wallet Pages
   static wallet = "/wallet";
-  static newUser = (userHandle: string) => `/new-user/${userHandle}`;
   static tokens = `${Routes.wallet}/tokens`;
   static transactions = `${Routes.wallet}/transactions`;
+  static walletConnect = `${Routes.wallet}/wallet-connect`;
+  static walletConnectToDapp = `${Routes.walletConnect}/connect`;
   static settings = `${Routes.wallet}/settings`;
 
   // Auth
@@ -32,6 +26,8 @@ export class Routes {
   static signUp = `${Routes.authBasePath}/sign-up`;
   static authRedirectQueryParam = "redirectUrl";
   static authErrorQueryParam = "errorMsg";
+  static newUser = (userHandle: string) => `/new-user/${userHandle}`;
+
   static authProtectedPages = [Routes.wallet];
   static authPages = [Routes.signIn, Routes.signUp, Routes.newUser];
 

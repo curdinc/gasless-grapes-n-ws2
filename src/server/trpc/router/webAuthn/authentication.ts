@@ -1,4 +1,5 @@
 import { AUTH_COOKIE_NAME } from "@server/common/get-server-auth-session";
+import { ServerRoutes } from "@server/common/serverRoutes";
 import { DeviceAuthenticator } from "@server/db/modals/DeviceAuthenticator";
 import { UserChallenge } from "@server/db/modals/UserChallenge";
 import { publicProcedure } from "@server/trpc/trpc";
@@ -11,7 +12,6 @@ import { TRPCError } from "@trpc/server";
 import { Duration } from "@utils/duration";
 import { jwtCookie } from "@utils/jwtCookie";
 import { ErrorMessages } from "@utils/messages";
-import { Routes } from "@utils/routes";
 import { WebAuthnUtils } from "@utils/webAuthn";
 import { randomUUID } from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
@@ -25,7 +25,7 @@ export const webAuthnAuthenticationProcedures = {
       // You can require users to use a previously-registered authenticator here
       allowCredentials: [],
       userVerification: "preferred",
-      rpID: Routes.hostname,
+      rpID: ServerRoutes.serverHostname,
       timeout: Duration.TWO_MINUTE_IN_MILLISECONDS,
       extensions: {
         uvm: true,

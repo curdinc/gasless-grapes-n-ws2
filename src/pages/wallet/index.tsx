@@ -1,9 +1,11 @@
+import { BaseLayout } from "@components/layout/BaseLayout";
 import { WalletLayout } from "@components/layout/WalletLayout";
 import { BasicTokenView } from "@components/pages/wallet/Tokens/BasicTokenView";
 import { Spinner } from "@components/ui/progress/Spinner";
 import { trpc } from "@utils/trpc";
+import type { NextPage } from "next";
 
-export default function WalletPage() {
+const WalletPage: NextPage = () => {
   const { mutate: createFirstWallet } =
     trpc.smartContractWallet.createNewWalletDetail.useMutation({
       onSuccess() {
@@ -26,9 +28,15 @@ export default function WalletPage() {
       </div>
     );
   }
+  return <BasicTokenView />;
+};
+
+WalletPage.getLayout = (page) => {
   return (
-    <WalletLayout>
-      <BasicTokenView />
-    </WalletLayout>
+    <BaseLayout>
+      <WalletLayout>{page}</WalletLayout>
+    </BaseLayout>
   );
-}
+};
+
+export default WalletPage;

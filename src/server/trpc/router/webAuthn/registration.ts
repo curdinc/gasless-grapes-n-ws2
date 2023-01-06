@@ -1,4 +1,5 @@
 import { AUTH_COOKIE_NAME } from "@server/common/get-server-auth-session";
+import { ServerRoutes } from "@server/common/serverRoutes";
 import { User } from "@server/db/modals/User";
 import { UserChallenge } from "@server/db/modals/UserChallenge";
 import { publicProcedure } from "@server/trpc/trpc";
@@ -10,7 +11,6 @@ import {
 import { TRPCError } from "@trpc/server";
 import { Duration } from "@utils/duration";
 import { jwtCookie } from "@utils/jwtCookie";
-import { Routes } from "@utils/routes";
 import { WebAuthnUtils } from "@utils/webAuthn";
 import { randomUUID } from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
@@ -36,7 +36,7 @@ export const webAuthnRegistrationProcedures = {
 
     const options = generateRegistrationOptions({
       rpName: WEB_AUTHN_RP_NAME,
-      rpID: Routes.hostname,
+      rpID: ServerRoutes.serverHostname,
       userID: user.id,
       userName: user.handle,
       attestationType: "direct",

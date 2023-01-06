@@ -1,8 +1,9 @@
+import { BaseLayout } from "@components/layout/BaseLayout";
 import { ChooseUsername } from "@components/pages/auth/ChooseUsername";
 import { Routes } from "@utils/routes";
 import Link from "next/link";
 
-export default function SignIn() {
+export default function SignUpPage() {
   return (
     <div className={"flex h-full flex-1 items-center justify-center"}>
       <div className="flex max-w-md flex-col p-14">
@@ -19,3 +20,7 @@ export default function SignIn() {
     </div>
   );
 }
+
+SignUpPage.getLayout = function getLayout(page: React.ReactElement) {
+  return <BaseLayout>{page}</BaseLayout>;
+};
