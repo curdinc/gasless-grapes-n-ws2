@@ -29,7 +29,6 @@
 @layer components {
   .fusion {
     background-color: transparent;
-    stroke-width: 2px;
     stroke-miterlimit: 5;
     fill: none;
   }
