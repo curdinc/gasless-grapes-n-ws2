@@ -95,10 +95,10 @@ export function User() {
       } catch (e) {
         if (
           e instanceof Error &&
-          e.message.includes(ErrorMessages.prisma.fieldAlreadyExists)
+          e.message.includes(ErrorMessages.Prisma.fieldAlreadyExists)
         ) {
           const field = e.message
-            .split(ErrorMessages.prisma.fieldAlreadyExists)?.[1]
+            .split(ErrorMessages.Prisma.fieldAlreadyExists)?.[1]
             ?.slice(0, -2);
           throw new TRPCError({
             code: "BAD_REQUEST",

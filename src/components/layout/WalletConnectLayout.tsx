@@ -18,18 +18,10 @@ export function WalletConnectLayout({
         className="flex-row space-x-5"
         aria-label="Groceries"
       >
-        <TabLink
-          className="link"
-          id={Routes.walletConnect}
-          to={Routes.walletConnect}
-        >
+        <TabLink className="link" id={Routes.walletConnect}>
           Sessions
         </TabLink>
-        <TabLink
-          className="link"
-          id={Routes.walletConnectToDapp}
-          to={Routes.walletConnectToDapp}
-        >
+        <TabLink className="link" id={Routes.walletConnectToDapp}>
           Connect
         </TabLink>
       </TabList>
@@ -42,10 +34,10 @@ export function WalletConnectLayout({
   );
 }
 
-type TabLinkProps = TabProps<"a"> & { to: string };
+type TabLinkProps = TabProps<"a"> & { id: string };
 
-export function TabLink({ to, ...props }: TabLinkProps) {
-  return <Tab {...props} as={Link} href={to} />;
+export function TabLink(props: TabLinkProps) {
+  return <Tab {...props} as={Link} href={props.id} />;
 }
 
 export function useTabLinkState(props: TabStateProps = {}) {

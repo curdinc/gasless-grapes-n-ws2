@@ -58,7 +58,7 @@ export default function SignIn() {
     } catch (e) {
       let errorMessage = ErrorMessages.somethingWentWrong;
       if (e instanceof Error) {
-        if (e.message.includes(ErrorMessages.webAuthn.timeoutOrCancel)) {
+        if (e.message.includes(ErrorMessages.WebAuthn.timeoutOrCancel)) {
           errorMessage = ErrorMessages.userDeclinedRegistrationOrTimeout;
         } else {
           errorMessage = e.message;

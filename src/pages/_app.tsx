@@ -1,3 +1,4 @@
+export { reportWebVitals } from "next-axiom";
 import { BaseLayout } from "@components/layout/BaseLayout";
 import "@styles/globals.css";
 import { trpc } from "@utils/trpc";
