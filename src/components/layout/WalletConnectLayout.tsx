@@ -18,10 +18,10 @@ export function WalletConnectLayout({
         className="flex-row space-x-5"
         aria-label="Groceries"
       >
-        <TabLink className="link" id={Routes.walletConnect}>
-          Sessions
+        <TabLink className="link" id={Routes.wallet.walletConnect}>
+          Active Sessions
         </TabLink>
-        <TabLink className="link" id={Routes.walletConnectToDapp}>
+        <TabLink className="link" id={Routes.wallet.walletConnectToDapp}>
           Connect
         </TabLink>
       </TabList>
@@ -51,7 +51,7 @@ export function useTabLinkState(props: TabStateProps = {}) {
       // setSelectedId may be called more than once for the same id, so we make
       // sure we only navigate once.
       if (id !== selectedId) {
-        router.push(id || Routes.walletConnect);
+        router.push(id || Routes.wallet.walletConnect);
       }
     },
   });

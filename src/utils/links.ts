@@ -28,13 +28,32 @@ export class Links {
     }
   };
 
-  static rpcUrl(chain: SupportedChainType) {
-    switch (chain) {
-      case "Ethereum":
-      case "Goerli":
-      case "Polygon":
-      case "Mumbai":
-        return Links.alchemyRpcUrl(chain);
+  static rpcUrl(args: { chainId: number } | { chain: SupportedChainType }) {
+    if ("chain" in args) {
+      const chain = args.chain;
+      switch (chain) {
+        case "Ethereum":
+        case "Goerli":
+        case "Polygon":
+        case "Mumbai":
+          return Links.alchemyRpcUrl(chain);
+        default:
+          throw new Error(`Invalid Chain: ${chain}`);
+      }
+    } else if ("chainId" in args) {
+      const chainId = args.chainId;
+      switch (chainId) {
+        case 1:
+          return Links.alchemyRpcUrl("Ethereum");
+        case 5:
+          return Links.alchemyRpcUrl("Goerli");
+        case 80001:
+          return Links.alchemyRpcUrl("Mumbai");
+        case 137:
+          return Links.alchemyRpcUrl("Polygon");
+        default:
+          throw new Error(`Invalid ChainId: ${chainId}`);
+      }
     }
   }
 }

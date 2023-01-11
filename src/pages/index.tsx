@@ -32,7 +32,7 @@ const Home: NextPage = () => {
           <Button
             className="btn mt-10 text-lg"
             onClick={() => {
-              router.push(Routes.wallet);
+              router.push(Routes.wallet.home);
             }}
           >
             Secure your assets

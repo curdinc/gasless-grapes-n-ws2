@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
         Routes.authRedirectQueryParam
       );
       return NextResponse.redirect(
-        new URL(redirectUrl ?? Routes.wallet, request.nextUrl.origin)
+        new URL(redirectUrl ?? Routes.wallet.home, request.nextUrl.origin)
       );
     }
   }

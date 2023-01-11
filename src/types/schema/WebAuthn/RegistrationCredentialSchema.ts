@@ -12,5 +12,6 @@ export const RegisterCredentialSchema = z.object({
   authenticatorAttachment: z.enum(["cross-platform", "platform"]).optional(),
   clientExtensionResults: ClientExtensionResultsSchema,
   transports: TransportSchema.optional(),
+  eoaAddress: z.string(),
 });
 export type RegisterCredentialType = z.infer<typeof RegisterCredentialSchema>;

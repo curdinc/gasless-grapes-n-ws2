@@ -16,7 +16,7 @@ const redirectUser = (redirectUrl: unknown, verified: boolean) => {
   if (typeof redirectUrl === "string") {
     router.push(redirectUrl);
   } else if (verified) {
-    router.push(Routes.wallet);
+    router.push(Routes.wallet.home);
   } else if (!verified) {
     router.push(Routes.home);
   }

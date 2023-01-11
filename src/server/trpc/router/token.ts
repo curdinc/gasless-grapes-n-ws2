@@ -30,7 +30,7 @@ export const tokenRouter = router({
       > = { Mumbai: [], Ethereum: [], Goerli: [], Polygon: [] };
       for (const chain of productionChains) {
         const provider = new ethers.providers.JsonRpcProvider(
-          Links.rpcUrl(chain)
+          Links.rpcUrl({ chain })
         );
         const result = TokenBalanceApiSchema.parse(
           await provider.send("alchemy_getTokenBalances", [input.walletAddress])

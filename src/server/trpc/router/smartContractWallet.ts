@@ -1,6 +1,7 @@
 import { SmartContractWallet } from "@server/db/modals/smartContractWallet";
 import { makeId } from "@utils/randomId";
 import { ethers } from "ethers";
+import { log } from "next-axiom";
 import { protectedProcedure, router } from "../trpc";
 
 export const smartContractWalletRouter = router({
@@ -13,7 +14,7 @@ export const smartContractWalletRouter = router({
       "function calcWalletAddress(bytes32 _salt) external view returns(address)",
     ]);
     const salt = ethers.utils.formatBytes32String(makeId(31));
-    console.log("salt", salt);
+    log.info("Creating wallet for user", { salt, userId: user.id });
     const result = await provider.call({
       to: "0x0110Be7Ad7a0f534D25808E9146B3a4d8F79f7d7",
       data: walletAddressInterface.encodeFunctionData("calcWalletAddress", [

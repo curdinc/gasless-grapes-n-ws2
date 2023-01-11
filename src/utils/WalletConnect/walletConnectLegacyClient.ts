@@ -1,10 +1,8 @@
 import type { WalletConnectLegacySessionRequestProps } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacySessionRequest";
 import { WalletConnectLegacySessionRequest } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacySessionRequest";
+import { WalletConnectLegacySignMessage } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacySignMessage";
 import LegacySignClient from "@walletconnect/client";
-import type {
-  IClientMeta,
-  IWalletConnectSession,
-} from "@walletconnect/legacy-types";
+import type { IWalletConnectSession } from "@walletconnect/legacy-types";
 import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
 import { log } from "next-axiom";
 import { EIP155_SIGNING_METHODS } from "./methods";
@@ -50,7 +48,7 @@ export function createLegacySignClient({ uri }: { uri?: string }) {
       error,
       payload: {
         event: "connect";
-        params: [{ chainId: number; peerId: string; peerMeta: IClientMeta }];
+        params: WalletConnectLegacySessionRequestProps["params"];
       }
     ) => {
       // fired after the user approves the session_request
@@ -77,32 +75,37 @@ export function createLegacySignClient({ uri }: { uri?: string }) {
 const onCallRequest = async (payload: {
   id: number;
   method: string;
-  params: any[];
+  params: unknown[];
 }) => {
   const { openModal } = walletConnectStore.getState();
+  if (!walletConnectLegacySignClient.session.peerMeta) {
+    throw new Error("Missing connecting app details");
+  }
 
   switch (payload.method) {
     case EIP155_SIGNING_METHODS.ETH_SIGN:
     case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-      openModal("LegacySessionSignModal", {
-        legacyCallRequestEvent: payload,
-        legacyRequestSession: walletConnectLegacySignClient.session,
+      return openModal({
+        modalTitle: "Sign Message",
+        modalBody: WalletConnectLegacySignMessage({
+          projectDetails: walletConnectLegacySignClient.session.peerMeta,
+          transactionDetails: payload,
+        }),
       });
 
     case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
     case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
     case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-      openModal("LegacySessionSignTypedDataModal", {
-        legacyCallRequestEvent: payload,
-        legacyRequestSession: walletConnectLegacySignClient.session,
-      });
+    // openModal("LegacySessionSignTypedDataModal", {
+    //   legacyCallRequestEvent: payload,
+    //   legacyRequestSession: walletConnectLegacySignClient.session,
+    // });
 
     case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
     case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-      openModal("LegacySessionSendTransactionModal", {
-        legacyCallRequestEvent: payload,
-        legacyRequestSession: walletConnectLegacySignClient.session,
-      });
+    // openModal({
+    //   modalTitle: "Sign Transaction",
+    // });
 
     default:
       alert(`${payload.method} is not supported for WalletConnect v1`);
@@ -127,7 +130,7 @@ function getCachedLegacySession(): IWalletConnectSession | undefined {
   return session;
 }
 
-function deleteCachedLegacySession(): void {
+export function deleteCachedLegacySession(): void {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem("walletconnect");
 }

@@ -36,6 +36,8 @@ export class ErrorMessages {
   // WalletConnect
   static invalidUri =
     "The link provided is invalid. Please check the link you copied and try again.";
+  static missingUserWallet =
+    "The current device has not been registered.Please register it first before attempting to connect via Wallet Connect";
   static WalletConnect = {
     invalidUri: "Missing or invalid. pair() uri:",
   };

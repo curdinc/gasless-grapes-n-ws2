@@ -13,12 +13,14 @@ export class Routes {
   static home = "/";
 
   // Wallet Pages
-  static wallet = "/wallet";
-  static tokens = `${Routes.wallet}/tokens`;
-  static transactions = `${Routes.wallet}/transactions`;
-  static walletConnect = `${Routes.wallet}/wallet-connect`;
-  static walletConnectToDapp = `${Routes.walletConnect}/connect`;
-  static settings = `${Routes.wallet}/settings`;
+  static wallet = {
+    home: "/wallet",
+    tokens: `/wallet/tokens`,
+    transactions: `/wallet/transactions`,
+    walletConnect: `/wallet/wallet-connect`,
+    walletConnectToDapp: `/wallet/wallet-connect/connect`,
+    settings: `/wallet/settings`,
+  };
 
   // Auth
   static authBasePath = "/auth";
@@ -28,9 +30,10 @@ export class Routes {
   static authErrorQueryParam = "errorMsg";
   static newUser = (userHandle: string) => `/new-user/${userHandle}`;
 
-  static authProtectedPages = [Routes.wallet];
+  static authProtectedPages = [...Object.values(Routes.wallet)];
   static authPages = [Routes.signIn, Routes.signUp, Routes.newUser];
 
   // New User
   static userNameQueryParam = "username";
 }
+

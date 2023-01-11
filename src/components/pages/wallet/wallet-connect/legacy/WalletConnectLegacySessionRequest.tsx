@@ -1,5 +1,6 @@
 import { Button } from "@components/ui/input/Button";
 import { walletConnectLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
+import { WebAuthnUtils } from "@utils/webAuthn";
 import type { IClientMeta } from "@walletconnect/legacy-types";
 import { getSdkError } from "@walletconnect/utils";
 import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
@@ -12,11 +13,20 @@ export type WalletConnectLegacySessionRequestProps = {
 export const WalletConnectLegacySessionRequest = (
   props: WalletConnectLegacySessionRequestProps
 ) => {
-  const { closeModal, accountsToConnect } = walletConnectStore.getState();
-
+  console.log("props", props);
+  const { closeModal, user } = walletConnectStore.getState();
   const onApprove = async () => {
+    const wallet = WebAuthnUtils.getAssociatedEoaWallet({
+      chainId: chainId ?? 1,
+      deviceName: user.currentDeviceName,
+      userId: user.id,
+    });
+    if (!wallet) {
+      // TODO: make a toast to warn of error
+      return;
+    }
     walletConnectLegacySignClient.approveSession({
-      accounts: accountsToConnect,
+      accounts: [wallet.address],
       chainId: chainId ?? 1,
     });
     closeModal();
@@ -37,7 +47,7 @@ export const WalletConnectLegacySessionRequest = (
       <div>
         <WalletConnectProjectInfo {...peerMeta} />
       </div>
-      <div className="flex-row justify-end">
+      <div className="mt-3 flex-row justify-end">
         <Button
           className="btn mr-3 bg-neutral-600"
           onClick={() => {

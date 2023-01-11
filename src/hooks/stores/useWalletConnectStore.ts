@@ -1,6 +1,8 @@
 import { useDialogState } from "ariakit";
+import { Wallet } from "ethers";
 import type React from "react";
 import { useEffect } from "react";
+import type { AuthUserType } from "types/schema/AuthUserSchema";
 import { createStore, useStore } from "zustand";
 import { combine } from "zustand/middleware";
 
@@ -8,6 +10,14 @@ export const walletConnectStore = createStore(
   combine(
     {
       accountsToConnect: [] as string[],
+      user: {
+        currentDeviceName: "",
+        handle: "",
+        id: "",
+        state: "pendingAuthentication",
+      } as AuthUserType,
+      wallet: Wallet,
+      modalError: "",
       isOpenModal: false,
       modalTitle: "",
       modalBody: null as React.ReactNode,
@@ -21,8 +31,6 @@ export const walletConnectStore = createStore(
         }: {
           modalTitle: string;
           modalBody: React.ReactNode;
-          onReject?: () => void;
-          onApprove?: () => void;
         }) =>
           set({
             isOpenModal: true,

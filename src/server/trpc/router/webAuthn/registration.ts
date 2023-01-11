@@ -100,7 +100,7 @@ export const webAuthnRegistrationProcedures = {
 
       const { verified, registrationInfo } = verification;
       if (!registrationInfo) {
-        return { verified };
+        return { verified, user };
       }
 
       if (user.state === "pendingRegistration") {
@@ -120,6 +120,11 @@ export const webAuthnRegistrationProcedures = {
             deviceName: user.currentDeviceName,
             rawAttestation: input.response.attestationObject,
             transports: input.transports,
+            EoaWallet: {
+              create: {
+                address: input.eoaAddress,
+              },
+            },
           },
         });
       }
@@ -128,6 +133,6 @@ export const webAuthnRegistrationProcedures = {
         ...user,
         state: "loggedIn",
       });
-      return { verified };
+      return { verified, user };
     }),
 };
