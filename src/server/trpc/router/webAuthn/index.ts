@@ -1,5 +1,5 @@
+import { ServerRoutes } from "@server/common/serverRoutes";
 import { router } from "@server/trpc/trpc";
-import { Routes } from "@utils/routes";
 import { webAuthnAuthenticationProcedures } from "./authentication";
 import { webAuthnRegistrationProcedures } from "./registration";
 
@@ -8,7 +8,7 @@ export const WEB_AUTHN_RP_NAME = "Gasless Grapes";
 
 // A unique identifier for your website
 export const WEB_AUTHN_RP_ID = [
-  Routes.hostname,
+  ServerRoutes.serverHostname,
   "localhost",
   "gaslessgrapes.vercel.app",
 ];

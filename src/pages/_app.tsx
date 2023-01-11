@@ -1,19 +1,22 @@
+export { reportWebVitals } from "next-axiom";
 import { BaseLayout } from "@components/layout/BaseLayout";
 import "@styles/globals.css";
 import { trpc } from "@utils/trpc";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import type { AppType } from "next/app";
+import type { AppWithLayoutType } from "next/app";
 
-const MyApp: AppType<{ session: Session | null }> = ({
+const MyApp: AppWithLayoutType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  // Use the layout defined at the page level, if available
+  const getLayout =
+    Component.getLayout ||
+    ((page: React.ReactNode) => <BaseLayout>{page}</BaseLayout>);
   return (
     <SessionProvider session={session}>
-      <BaseLayout>
-        <Component {...pageProps} />
-      </BaseLayout>
+      {getLayout(<Component {...pageProps} />)}
     </SessionProvider>
   );
 };

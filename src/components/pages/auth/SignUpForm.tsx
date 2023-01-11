@@ -25,7 +25,7 @@ const redirectUser = (redirectUrl: unknown, verified: boolean) => {
   if (typeof redirectUrl === "string") {
     router.push(redirectUrl);
   } else if (verified) {
-    router.push(Routes.wallet);
+    router.push(Routes.wallet.home);
   } else if (!verified) {
     router.push(Routes.home);
   }
@@ -97,7 +97,10 @@ export const SignUpForm = () => {
     }
 
     try {
-      await verifyDeviceRegistration(attestationResponse);
+      await verifyDeviceRegistration({
+        ...attestationResponse,
+        eoaAddress: "",
+      });
     } catch (e) {
       console.error("Error verifying device credentials", e);
       if (e instanceof Error) {

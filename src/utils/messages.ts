@@ -10,7 +10,7 @@ export class ErrorMessages {
   static userDeclinedRegistrationOrTimeout =
     "User Declined Registration or took too long";
 
-  static webAuthn = {
+  static WebAuthn = {
     timeoutOrCancel:
       "User clicked cancel, or the authentication ceremony timed out",
   };
@@ -33,6 +33,15 @@ export class ErrorMessages {
     "Too many default smart contract wallets";
   static invalidWalletAddress = "Invalid wallet address given";
 
+  // WalletConnect
+  static invalidUri =
+    "The link provided is invalid. Please check the link you copied and try again.";
+  static missingUserWallet =
+    "The current device has not been registered.Please register it first before attempting to connect via Wallet Connect";
+  static WalletConnect = {
+    invalidUri: "Missing or invalid. pair() uri:",
+  };
+
   // redis
   static errorSettingRedisValue = (value: string, location: string) =>
     `Error trying to set value:${value} while executing: ${location} in redis.`;
@@ -41,7 +50,7 @@ export class ErrorMessages {
   // DB
   static fieldAlreadyExists = (field: string) =>
     `The ${field} given already exists. Please try again with another one.`;
-  static prisma = {
+  static Prisma = {
     fieldAlreadyExists: `Unique constraint failed on the fields: (\``,
   };
 }

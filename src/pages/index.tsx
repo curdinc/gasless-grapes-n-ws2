@@ -1,6 +1,7 @@
+import { BaseLayout } from "@components/layout/BaseLayout";
 import { Button } from "@components/ui/input/Button";
 import { Routes } from "@utils/routes";
-import { type NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
 import router from "next/router";
 
@@ -31,7 +32,7 @@ const Home: NextPage = () => {
           <Button
             className="btn mt-10 text-lg"
             onClick={() => {
-              router.push(Routes.wallet);
+              router.push(Routes.wallet.home);
             }}
           >
             Secure your assets
@@ -40,6 +41,10 @@ const Home: NextPage = () => {
       </main>
     </>
   );
+};
+
+Home.getLayout = function getLayout(page: React.ReactElement) {
+  return <BaseLayout>{page}</BaseLayout>;
 };
 
 export default Home;

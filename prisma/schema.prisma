@@ -25,19 +25,20 @@ model User {
 }
 
 model DeviceAuthenticator {
-  id                   String   @id @default(uuid())
+  id                   String     @id @default(uuid())
   deviceName           String
-  credentialId         String   @unique
-  credentialPublicKey  String   @unique
+  credentialId         String     @unique
+  credentialPublicKey  String     @unique
   counter              Int
   credentialDeviceType String
   credentialBackedUp   Boolean
   rawAttestation       String
   transports           String[]
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
   userId               String
-  User                 User     @relation(fields: [userId], references: [id])
+  User                 User       @relation(fields: [userId], references: [id])
+  EoaWallet            EoaWallet?
 
   @@unique([credentialId, credentialPublicKey])
   @@unique([userId, deviceName])
@@ -53,6 +54,7 @@ model SmartContractWallet {
   updatedAt    DateTime  @updatedAt
   userId       String
   User         User      @relation(fields: [userId], references: [id])
+  Tokens       Tokens[]
 }
 
 model GasRefund {
@@ -62,4 +64,28 @@ model GasRefund {
   transactions  String[]
   email         String?  @unique
   updatedAt     DateTime @default(now()) @updatedAt
+}
+
+model Tokens {
+  id                    String              @id @default(uuid())
+  contractAddress       String
+  symbol                String
+  name                  String
+  logoUri               String
+  chain                 Decimal
+  decimals              Decimal
+  smartContractWalletId String
+  SmartContractWallet   SmartContractWallet @relation(fields: [smartContractWalletId], references: [id])
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+}
+
+model EoaWallet {
+  id                    String              @id @default(uuid())
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  address               String
+  privateKey            String?
+  deviceAuthenticatorId String              @unique
+  DeviceAuthenticator   DeviceAuthenticator @relation(fields: [deviceAuthenticatorId], references: [id])
 }

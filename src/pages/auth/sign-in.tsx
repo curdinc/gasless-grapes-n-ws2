@@ -1,3 +1,4 @@
+import { BaseLayout } from "@components/layout/BaseLayout";
 import { Button } from "@components/ui/input/Button";
 import { startAuthentication } from "@simplewebauthn/browser";
 import type {
@@ -15,7 +16,7 @@ const redirectUser = (redirectUrl: unknown, verified: boolean) => {
   if (typeof redirectUrl === "string") {
     router.push(redirectUrl);
   } else if (verified) {
-    router.push(Routes.wallet);
+    router.push(Routes.wallet.home);
   } else if (!verified) {
     router.push(Routes.home);
   }
@@ -57,7 +58,7 @@ export default function SignIn() {
     } catch (e) {
       let errorMessage = ErrorMessages.somethingWentWrong;
       if (e instanceof Error) {
-        if (e.message.includes(ErrorMessages.webAuthn.timeoutOrCancel)) {
+        if (e.message.includes(ErrorMessages.WebAuthn.timeoutOrCancel)) {
           errorMessage = ErrorMessages.userDeclinedRegistrationOrTimeout;
         } else {
           errorMessage = e.message;
@@ -90,3 +91,7 @@ export default function SignIn() {
     </div>
   );
 }
+
+SignIn.getLayout = function getLayout(page: React.ReactElement) {
+  return <BaseLayout>{page}</BaseLayout>;
+};

@@ -27,6 +27,19 @@
 }
 
 @layer components {
+  [data-backdrop] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(204 10% 10% / 0.1);
+    backdrop-filter: blur(4px);
+  }
+
+  .fusion {
+    background-color: transparent;
+    stroke-miterlimit: 5;
+    fill: none;
+  }
   .sr-only {
     position: absolute;
     left: -10000px;

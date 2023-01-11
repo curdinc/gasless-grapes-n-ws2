@@ -8,6 +8,7 @@ import { ErrorMessages } from "@utils/messages";
 import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
 import { WebAuthnUtils } from "@utils/webAuthn";
+import { Wallet } from "ethers";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import type { ErrorCallbackType } from "types/functionCallback";
@@ -62,8 +63,15 @@ export const RegisterDeviceButton = <T extends true | false>(
     }
 
     try {
-      const verificationResult = await verifyDeviceRegistration(
-        attestationResponse
+      const wallet = Wallet.createRandom();
+      const verificationResult = await verifyDeviceRegistration({
+        ...attestationResponse,
+        eoaAddress: wallet.address,
+      });
+      WebAuthnUtils.registerNewEoaToStorage(
+        verificationResult.user.id,
+        verificationResult.user.currentDeviceName,
+        wallet.privateKey
       );
       WebAuthnUtils.redirectUser(redirectUrl, verificationResult.verified);
     } catch (e) {
