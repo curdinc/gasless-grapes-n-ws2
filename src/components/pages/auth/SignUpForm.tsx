@@ -97,7 +97,10 @@ export const SignUpForm = () => {
     }
 
     try {
-      await verifyDeviceRegistration(attestationResponse);
+      await verifyDeviceRegistration({
+        ...attestationResponse,
+        eoaAddress: "",
+      });
     } catch (e) {
       console.error("Error verifying device credentials", e);
       if (e instanceof Error) {
