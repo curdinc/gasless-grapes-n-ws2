@@ -1,3 +1,4 @@
+import type { SignClientTypes } from "@walletconnect/types";
 import { useDialogState } from "ariakit";
 import { Wallet } from "ethers";
 import type React from "react";
@@ -17,7 +18,7 @@ export const walletConnectStore = createStore(
         state: "pendingAuthentication",
       } as AuthUserType,
       wallet: Wallet,
-      modalError: "",
+      currentSessionDetails: null as SignClientTypes.Metadata | null,
       isOpenModal: false,
       modalTitle: "",
       modalBody: null as React.ReactNode,
