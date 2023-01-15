@@ -45,16 +45,17 @@ model DeviceAuthenticator {
 }
 
 model SmartContractWallet {
-  id           String    @id @default(uuid())
-  creationHash String    @unique
-  address      String    @unique
-  createdAt    DateTime  @default(now())
-  deployedAt   DateTime?
-  type         String
-  updatedAt    DateTime  @updatedAt
-  userId       String
-  User         User      @relation(fields: [userId], references: [id])
-  Tokens       Tokens[]
+  id             String    @id @default(uuid())
+  creationHash   String    @unique
+  address        String    @unique
+  createdAt      DateTime  @default(now())
+  deploymentHash String?
+  deployedAt     DateTime?
+  type           String
+  updatedAt      DateTime  @updatedAt
+  userId         String
+  User           User      @relation(fields: [userId], references: [id])
+  Tokens         Tokens[]
 }
 
 model GasRefund {

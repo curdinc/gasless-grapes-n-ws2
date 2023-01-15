@@ -24,6 +24,11 @@ export const serverSchema = z.object({
   ),
   DISCORD_CLIENT_ID: z.string(),
   DISCORD_CLIENT_SECRET: z.string(),
+  OPEN_ZEPPELIN_SECRET_KEY: z.string(),
+  OPEN_ZEPPELIN_API_KEY: z.string(),
+  SCW_WALLET_FACTORY: z.string(),
+  SCW_WALLET_BEACON: z.string(),
+  SCW_WALLET_BEACON_UPGRADEABLE: z.string(),
 });
 
 /**
@@ -42,6 +47,11 @@ export const serverEnv = {
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+  OPEN_ZEPPELIN_API_KEY: process.env.OPEN_ZEPPELIN_API_KEY,
+  OPEN_ZEPPELIN_SECRET_KEY: process.env.OPEN_ZEPPELIN_SECRET_KEY,
+  SCW_WALLET_FACTORY: process.env.SCW_WALLET_FACTORY,
+  SCW_WALLET_BEACON: process.env.SCW_WALLET_BEACON,
+  SCW_WALLET_BEACON_UPGRADEABLE: process.env.SCW_WALLET_BEACON_UPGRADEABLE,
 };
 
 /**

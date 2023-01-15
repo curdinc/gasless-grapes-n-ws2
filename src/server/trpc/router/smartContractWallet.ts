@@ -1,37 +1,38 @@
+import {
+  deploySmartContractWallet,
+  getSmartContractWalletAddress,
+} from "@server/common/ethers";
 import { SmartContractWallet } from "@server/db/modals/smartContractWallet";
-import { makeId } from "@utils/randomId";
-import { ethers } from "ethers";
-import { log } from "next-axiom";
 import { protectedProcedure, router } from "../trpc";
 
 export const smartContractWalletRouter = router({
   createNewWalletDetail: protectedProcedure.mutation(async ({ ctx }) => {
     const { user } = ctx.session;
-    const provider = ethers.getDefaultProvider(
-      "https://goerli.gateway.tenderly.co/7AoXEydPiJqHkTAB9KWSiu"
-    );
-    const walletAddressInterface = new ethers.utils.Interface([
-      "function calcWalletAddress(bytes32 _salt) external view returns(address)",
-    ]);
-    const salt = ethers.utils.formatBytes32String(makeId(31));
-    log.info("Creating wallet for user", { salt, userId: user.id });
-    const result = await provider.call({
-      to: "0x0110Be7Ad7a0f534D25808E9146B3a4d8F79f7d7",
-      data: walletAddressInterface.encodeFunctionData("calcWalletAddress", [
-        salt,
-      ]),
-    });
-    const value = walletAddressInterface.decodeFunctionResult(
-      "calcWalletAddress",
-      result
-    )[0];
+    const { salt, walletAddress } = await getSmartContractWalletAddress();
+    console.log("SCW: Creating wallet for user", { salt, userId: user.id });
 
     // store the wallet address and the hash used to generate the particular address
-    return await SmartContractWallet().createDefaultWallet({
-      address: value,
+    await SmartContractWallet().createDefaultWallet({
+      address: walletAddress,
       userId: user.id,
       walletSalt: salt,
     });
+    console.log("SCW: Added DB entry for user", { salt, userId: user.id });
+
+    // TODO: Probably move this into a queue to prevent clogging up the backend
+    const { txHash } = await deploySmartContractWallet(salt);
+    console.log("SCW: deployed wallet for user", {
+      salt,
+      userId: user.id,
+      txHash,
+    });
+
+    const updatedWallet = await SmartContractWallet().deployed({
+      address: walletAddress,
+      deploymentHash: txHash,
+    });
+
+    return updatedWallet;
   }),
   getDefaultWalletDetail: protectedProcedure.query(async ({ ctx }) => {
     const wallet = await SmartContractWallet().getDefault({

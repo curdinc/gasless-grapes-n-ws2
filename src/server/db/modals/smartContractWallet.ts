@@ -63,6 +63,20 @@ export function SmartContractWallet() {
       }
       return wallets?.SmartContractWallet?.[0] ?? null;
     },
+    async deployed({
+      address,
+      deploymentHash,
+    }: {
+      address: string;
+      deploymentHash: string;
+    }) {
+      return await prisma.smartContractWallet.update({
+        where: {
+          address,
+        },
+        data: { deployedAt: new Date(), deploymentHash },
+      });
+    },
     async getAll({ userId }: { userId: string }) {
       const wallets = await prisma.user.findUnique({
         where: {
