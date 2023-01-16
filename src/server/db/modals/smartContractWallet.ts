@@ -1,5 +1,6 @@
 import { ErrorMessages } from "@utils/messages";
-import { SmartContractWalletType } from "types/schema/SmartContractWallet";
+import type { SmartContractWalletOptionsType } from "types/schema/SmartContractWallet";
+import { SmartContractWalletOptions } from "types/schema/SmartContractWallet";
 
 import { prisma, PrismaObject } from "../client";
 
@@ -9,40 +10,55 @@ export function SmartContractWallet() {
      * Attempts to create a smart contract wallet row with "Default" type
      * throws if there is an  existing row in the DB
      */
-    async createDefaultWallet({
+    async create({
       userId,
       walletSalt,
       address,
+      type,
     }: {
       userId: string;
       walletSalt: string;
       address: string;
+      type: SmartContractWalletOptionsType;
     }) {
-      const wallet = await SmartContractWallet().getDefault({
-        userId,
-      });
+      if (type === SmartContractWalletOptions.Default) {
+        const wallet = await SmartContractWallet().getByType({
+          userId,
+          type,
+        });
 
-      if (wallet) {
-        throw new Error(ErrorMessages.defaultSmartContractWalletAlreadyExists);
+        if (wallet?.[0]) {
+          throw new Error(
+            ErrorMessages.defaultSmartContractWalletAlreadyExists
+          );
+        }
       }
 
       return prisma.smartContractWallet.create({
         data: {
           address,
-          creationHash: walletSalt,
+          creationSalt: walletSalt,
           userId,
-          type: SmartContractWalletType.Default,
+          type: SmartContractWalletOptions.Default,
         },
       });
     },
-    async getWalletByAddress({ walletAddress }: { walletAddress: string }) {
-      return prisma.smartContractWallet.findUnique({
+    async getByAddress({ walletAddress }: { walletAddress: string }) {
+      const wallets = await prisma.smartContractWallet.findUnique({
         where: {
           address: walletAddress,
         },
+        include: { SmartContractWalletDetails: true },
       });
+      return wallets;
     },
-    async getDefault({ userId }: { userId: string }) {
+    async getByType({
+      userId,
+      type,
+    }: {
+      userId: string;
+      type: SmartContractWalletOptionsType;
+    }) {
       const wallets = await prisma.user.findUnique({
         where: {
           id: userId,
@@ -50,26 +66,28 @@ export function SmartContractWallet() {
         select: {
           SmartContractWallet: {
             where: {
-              type: SmartContractWalletType.Default,
+              type,
+            },
+            include: {
+              SmartContractWalletDetails: true,
             },
           },
         },
       });
-      if (
-        wallets?.SmartContractWallet &&
-        wallets.SmartContractWallet.length > 1
-      ) {
-        throw new Error(ErrorMessages.tooManyDefaultSmartContractWallets);
-      }
-      return wallets?.SmartContractWallet?.[0] ?? null;
+      return wallets?.SmartContractWallet ?? null;
     },
+
     async getAll({ userId }: { userId: string }) {
       const wallets = await prisma.user.findUnique({
         where: {
           id: userId,
         },
         select: {
-          SmartContractWallet: true,
+          SmartContractWallet: {
+            include: {
+              SmartContractWalletDetails: true,
+            },
+          },
         },
       });
       return wallets?.SmartContractWallet ?? null;

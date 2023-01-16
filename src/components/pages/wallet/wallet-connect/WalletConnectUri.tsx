@@ -1,4 +1,3 @@
-import { Button } from "@components/ui/input/Button";
 import { ErrorMessages } from "@utils/messages";
 import { WalletConnectClient } from "@utils/WalletConnect/walletConnectClient";
 import { createLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
@@ -57,7 +56,7 @@ export function WalletConnectUri() {
             disabled={isLoading}
             className="text-input"
           />
-          <FormSubmit className="btn" as={Button} disabled={isLoading}>
+          <FormSubmit className="btn" disabled={isLoading}>
             Connect
           </FormSubmit>
         </div>

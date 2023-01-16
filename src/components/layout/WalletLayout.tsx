@@ -3,6 +3,7 @@ import { WalletConnectConfirmationModal } from "@components/pages/wallet/wallet-
 import { Spinner } from "@components/ui/progress/Spinner";
 import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
+import { TokenViewStore } from "hooks/stores/useTokenStore";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -11,16 +12,18 @@ import {
   IoSettingsOutline,
   IoWalletOutline,
 } from "react-icons/io5";
+import { SmartContractWalletOptions } from "types/schema/SmartContractWallet";
+import { useStore } from "zustand";
 
 const links: Array<{ icon: JSX.Element; value: string; link: string }> = [
   {
     icon: <IoWalletOutline className="mr-2" />,
-    link: Routes.wallet.home,
+    link: Routes.wallet.tokens,
     value: "Tokens",
   },
   {
     icon: <IoListOutline className="mr-2" />,
-    link: Routes.wallet.home,
+    link: Routes.wallet.transactions,
     value: "Transactions",
   },
   {
@@ -36,26 +39,63 @@ const links: Array<{ icon: JSX.Element; value: string; link: string }> = [
   },
   {
     icon: <IoSettingsOutline className="mr-2" />,
-    link: Routes.wallet.home,
+    link: Routes.wallet.settings,
     value: "Settings",
   },
 ];
 
 export const WalletLayout = ({ children }: { children: React.ReactNode }) => {
-  const { mutate: createFirstWallet } =
-    trpc.smartContractWallet.createNewWalletDetail.useMutation({
+  const { setWalletDetails } = useStore(TokenViewStore, (state) => ({
+    setWalletDetails: state.setWalletDetails,
+  }));
+  const { mutate: deployWalletToChain } =
+    trpc.smartContractWallet.deployToNewChain.useMutation({
       onSuccess() {
         refetchWalletDetails();
       },
     });
-  const { data: userWalletDetails, refetch: refetchWalletDetails } =
-    trpc.smartContractWallet.getDefaultWalletDetail.useQuery(undefined, {
-      onSuccess(walletDetail) {
-        if (!walletDetail) {
-          createFirstWallet();
-        }
+  const { mutate: createFirstWallet } =
+    trpc.smartContractWallet.createNewWallet.useMutation({
+      onSuccess({ smartContractWallet }) {
+        deployWalletToChain({
+          chain: "Goerli",
+          walletAddress: smartContractWallet.address,
+        });
       },
     });
+  const {
+    data: userDefaultWalletDetails,
+    refetch: refetchWalletDetails,
+    isInitialLoading,
+  } = trpc.smartContractWallet.getWalletDetailsByType.useQuery(
+    { type: SmartContractWalletOptions.Default },
+    {
+      onSuccess(walletDetails) {
+        // set the wallet detail so that we can use it elsewhere
+        const walletDetail = walletDetails?.[0];
+        if (walletDetail) {
+          setWalletDetails(walletDetail);
+        }
+
+        // set up new wallet if it doesn't exists
+        if (!isInitialLoading) {
+          return;
+        }
+        if (!walletDetails?.length) {
+          createFirstWallet({
+            type: SmartContractWalletOptions.Default,
+          });
+          return;
+        }
+        if (!walletDetails[0]?.SmartContractWalletDetails.length) {
+          deployWalletToChain({
+            chain: "Goerli",
+            walletAddress: walletDetails[0]?.address || "",
+          });
+        }
+      },
+    }
+  );
   const router = useRouter();
   const currentRoute = router.pathname;
 
@@ -83,7 +123,7 @@ export const WalletLayout = ({ children }: { children: React.ReactNode }) => {
           </ul>
         </nav>
         <div className="col-span-8 bg-neutral-800">
-          {userWalletDetails ? (
+          {userDefaultWalletDetails ? (
             children
           ) : (
             <div className="w-full flex-1 items-center justify-center">
