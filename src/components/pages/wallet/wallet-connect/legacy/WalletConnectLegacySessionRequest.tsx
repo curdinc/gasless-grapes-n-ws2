@@ -13,7 +13,9 @@ export type WalletConnectLegacySessionRequestProps = {
 export const WalletConnectLegacySessionRequest = (
   props: WalletConnectLegacySessionRequestProps
 ) => {
-  console.log("props", props);
+  const { params } = props;
+  const [{ chainId, peerMeta }] = params;
+
   const { closeModal, user } = walletConnectStore.getState();
   const onApprove = async () => {
     const wallet = WebAuthnUtils.getAssociatedEoaWallet({
@@ -29,6 +31,9 @@ export const WalletConnectLegacySessionRequest = (
       accounts: [wallet.address],
       chainId: chainId ?? 1,
     });
+    walletConnectStore.setState({
+      currentSessionDetails: peerMeta,
+    });
     closeModal();
   };
   const onReject = () => {
@@ -38,9 +43,6 @@ export const WalletConnectLegacySessionRequest = (
     closeModal();
   };
   walletConnectStore.setState({ onReject });
-
-  const { params } = props;
-  const [{ chainId, peerMeta }] = params;
 
   return (
     <div>

@@ -1,20 +1,19 @@
 import { BaseLayout } from "@components/layout/BaseLayout";
 import { WalletConnectLayout } from "@components/layout/WalletConnectLayout";
 import { WalletLayout } from "@components/layout/WalletLayout";
+import { WalletConnectLegacyDisconnectButton } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacyDisconnectButton";
 import { WalletConnectProjectInfo } from "@components/pages/wallet/wallet-connect/WalletConnectProjectInfo";
-import { walletConnectLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
-import type { IClientMeta } from "@walletconnect/legacy-types";
+import { ok } from "assert";
+import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useStore } from "zustand";
 
 const WalletConnectPage: NextPage = () => {
-  const [currentSession, setCurrentSession] = useState<IClientMeta | null>(
-    null
-  );
-  useEffect(() => {
-    setCurrentSession(walletConnectLegacySignClient?.session.peerMeta);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletConnectLegacySignClient?.session.peerMeta]);
+  const { currentSession } = useStore(walletConnectStore, (state) => {
+    return {
+      currentSession: state.currentSessionDetails,
+    };
+  });
 
   if (!currentSession) {
     return <div className="mt-10">No Active Sessions</div>;
@@ -23,7 +22,7 @@ const WalletConnectPage: NextPage = () => {
     <div className="mt-10">
       <div className="flex-row justify-between">
         <WalletConnectProjectInfo {...currentSession} />
-        {/* <WalletConnectLegacyDisconnectButton /> */}
+        <WalletConnectLegacyDisconnectButton />
       </div>
     </div>
   );
