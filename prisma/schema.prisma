@@ -11,6 +11,15 @@ datasource db {
   shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
 }
 
+model GasRefund {
+  id            String   @id @default(uuid())
+  accessCode    String   @unique
+  walletAddress String?  @unique
+  transactions  String[]
+  email         String?  @unique
+  updatedAt     DateTime @default(now()) @updatedAt
+}
+
 model User {
   id                  String                @id @default(uuid())
   handle              String                @unique
@@ -45,40 +54,41 @@ model DeviceAuthenticator {
 }
 
 model SmartContractWallet {
-  id             String    @id @default(uuid())
-  creationHash   String    @unique
-  address        String    @unique
-  createdAt      DateTime  @default(now())
-  deploymentHash String?
-  deployedAt     DateTime?
-  type           String
-  updatedAt      DateTime  @updatedAt
-  userId         String
-  User           User      @relation(fields: [userId], references: [id])
-  Tokens         Tokens[]
+  id                         String                       @id @default(uuid())
+  creationSalt               String                       @unique
+  address                    String                       @unique
+  type                       String
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
+  userId                     String
+  User                       User                         @relation(fields: [userId], references: [id])
+  SmartContractWalletDetails SmartContractWalletDetails[]
 }
 
-model GasRefund {
-  id            String   @id @default(uuid())
-  accessCode    String   @unique
-  walletAddress String?  @unique
-  transactions  String[]
-  email         String?  @unique
-  updatedAt     DateTime @default(now()) @updatedAt
+model SmartContractWalletDetails {
+  id                    String              @id @default(uuid())
+  chain                 String
+  smartContractWalletId String
+  deploymentHash        String              @unique
+  deployedAt            DateTime
+  SmartContractWallet   SmartContractWallet @relation(fields: [smartContractWalletId], references: [id])
+  Tokens                Tokens[]
+
+  @@unique([chain, smartContractWalletId])
 }
 
 model Tokens {
-  id                    String              @id @default(uuid())
-  contractAddress       String
-  symbol                String
-  name                  String
-  logoUri               String
-  chain                 Decimal
-  decimals              Decimal
-  smartContractWalletId String
-  SmartContractWallet   SmartContractWallet @relation(fields: [smartContractWalletId], references: [id])
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
+  id                           String                     @id @default(uuid())
+  contractAddress              String
+  symbol                       String
+  name                         String
+  logoUri                      String
+  chain                        Decimal
+  decimals                     Decimal
+  smartContractWalletDetailsId String
+  SmartContractWalletDetails   SmartContractWalletDetails @relation(fields: [smartContractWalletDetailsId], references: [id])
+  createdAt                    DateTime                   @default(now())
+  updatedAt                    DateTime                   @updatedAt
 }
 
 model EoaWallet {

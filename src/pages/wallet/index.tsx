@@ -1,18 +1,17 @@
-import { BaseLayout } from "@components/layout/BaseLayout";
-import { WalletLayout } from "@components/layout/WalletLayout";
-import { BasicTokenView } from "@components/pages/wallet/Tokens/BasicTokenView";
-import type { NextPage } from "next";
+import { Routes } from "@utils/routes";
+import type { GetServerSideProps, NextPage } from "next";
 
 const WalletPage: NextPage = () => {
-  return <BasicTokenView />;
-};
-
-WalletPage.getLayout = (page) => {
-  return (
-    <BaseLayout>
-      <WalletLayout>{page}</WalletLayout>
-    </BaseLayout>
-  );
+  return null;
 };
 
 export default WalletPage;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  return {
+    redirect: {
+      destination: Routes.wallet.tokens,
+      permanent: false,
+    },
+  };
+};

@@ -1,24 +1,19 @@
 import { env } from "@env/server.mjs";
 import { Links } from "@utils/links";
 import { makeId } from "@utils/randomId";
-import console from "console";
 import {
   DefenderRelayProvider,
   DefenderRelaySigner,
 } from "defender-relay-client/lib/ethers";
 import { ethers } from "ethers";
+import type { SupportedChainType } from "types/schema/blockchain/chains";
 
 export async function getSmartContractWalletAddress() {
-  console.log(
-    'Links.rpcUrl({ chain: "Goerli" })',
-    Links.rpcUrl({ chain: "Goerli" })
-  );
   const provider = ethers.getDefaultProvider(Links.rpcUrl({ chain: "Goerli" }));
   const walletAddressInterface = new ethers.utils.Interface([
     "function calcWalletAddress(bytes32 _salt) external view returns(address)",
   ]);
   const salt = ethers.utils.formatBytes32String(makeId(31));
-  console.log("env.SCW_WALLET_FACTORY", env.SCW_WALLET_FACTORY);
   const result = await provider.call({
     to: env.SCW_WALLET_FACTORY,
     data: walletAddressInterface.encodeFunctionData("calcWalletAddress", [
@@ -32,11 +27,24 @@ export async function getSmartContractWalletAddress() {
   return { salt, walletAddress: value };
 }
 
-export async function deploySmartContractWallet(salt: string) {
-  const credentials = {
+const OPEN_ZEPPELIN_API_KEY: Record<
+  SupportedChainType,
+  { apiKey: string; apiSecret: string }
+> = {
+  Ethereum: { apiKey: "", apiSecret: "" },
+  Goerli: {
     apiKey: env.OPEN_ZEPPELIN_API_KEY,
     apiSecret: env.OPEN_ZEPPELIN_SECRET_KEY,
-  };
+  },
+  Polygon: { apiKey: "", apiSecret: "" },
+  Mumbai: { apiKey: "", apiSecret: "" },
+};
+
+export async function deploySmartContractWallet(
+  salt: string,
+  chain: SupportedChainType
+) {
+  const credentials = OPEN_ZEPPELIN_API_KEY[chain];
   const provider = new DefenderRelayProvider(credentials);
   const signer = new DefenderRelaySigner(credentials, provider, {
     speed: "fast",

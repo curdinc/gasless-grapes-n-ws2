@@ -32,6 +32,8 @@ export class ErrorMessages {
   static tooManyDefaultSmartContractWallets =
     "Too many default smart contract wallets";
   static invalidWalletAddress = "Invalid wallet address given";
+  static smartContractWalletAlreadyDeployed =
+    "Smart contract wallet already deployed to given chain";
 
   // WalletConnect
   static invalidUri =

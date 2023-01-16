@@ -1,13 +1,15 @@
-import { trpc } from "@utils/trpc";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
+import { TokenViewStore } from "hooks/stores/useTokenStore";
+import { useStore } from "zustand";
 import { AutoTokensView } from "./Tokens/AutoTokensView";
 
 export default function WalletAccountView() {
   const defaultSelectedId = "default-selected-tab";
   const tab = useTabState({ defaultSelectedId });
 
-  const { data: userWalletDetails } =
-    trpc.smartContractWallet.getDefaultWalletDetail.useQuery();
+  const { walletDetail } = useStore(TokenViewStore, (state) => ({
+    walletDetail: state.walletDetails,
+  }));
 
   return (
     <>
@@ -36,7 +38,7 @@ export default function WalletAccountView() {
       </TabList>
       <div className="mt-7">
         <TabPanel state={tab} tabId={defaultSelectedId}>
-          <AutoTokensView walletAddress={userWalletDetails?.address} />
+          <AutoTokensView walletAddress={walletDetail?.address} />
         </TabPanel>
         <TabPanel state={tab}>
           <ul>
