@@ -1,6 +1,6 @@
 import { Button } from "@components/ui/input/Button";
 import type { IClientMeta } from "@walletconnect/legacy-types";
-import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import { WalletConnectProjectInfo } from "../WalletConnectProjectInfo";
 
 export type WalletConnectLegacySendTransactionProps = {
@@ -11,14 +11,15 @@ export const WalletConnectLegacySendTransaction = (
   props: WalletConnectLegacySendTransactionProps
 ) => {
   console.log("props", props);
-  const { closeModal, user } = walletConnectStore.getState();
+  const { closeWalletConnectModal: closeModal, user } =
+    userWalletStore.getState();
   const onApprove = async () => {
     closeModal();
   };
   const onReject = () => {
     closeModal();
   };
-  walletConnectStore.setState({ onReject });
+  userWalletStore.setState({ onReject });
 
   const { projectDetails, transactionDetails } = props;
 

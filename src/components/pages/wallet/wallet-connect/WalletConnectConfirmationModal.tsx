@@ -4,8 +4,8 @@ import { createSignClient } from "@utils/WalletConnect/walletConnectClient";
 import { createLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
 import { Dialog, DialogHeading } from "ariakit";
 import {
+  userWalletStore,
   useWalletConnectDialogState,
-  walletConnectStore,
 } from "hooks/stores/useWalletConnectStore";
 import { useEffect } from "react";
 import { useStore } from "zustand";
@@ -28,17 +28,17 @@ export function WalletConnectConfirmationModal() {
   const { data: user } = trpc.user.me.useQuery();
   useEffect(() => {
     if (user) {
-      walletConnectStore.setState({
+      userWalletStore.setState({
         user,
       });
     }
   }, [user]);
 
-  const { modalBody, modalTitle } = useStore(walletConnectStore, (state) => {
+  const { modalBody, modalTitle } = useStore(userWalletStore, (state) => {
     return {
       modalBody: state.modalBody,
       modalTitle: state.modalTitle,
-      closeModal: state.closeModal,
+      closeModal: state.closeWalletConnectModal,
     };
   });
   const dialog = useWalletConnectDialogState();

@@ -3,7 +3,7 @@ import { WalletConnectConfirmationModal } from "@components/pages/wallet/wallet-
 import { Spinner } from "@components/ui/progress/Spinner";
 import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
-import { TokenViewStore } from "hooks/stores/useTokenStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -45,9 +45,12 @@ const links: Array<{ icon: JSX.Element; value: string; link: string }> = [
 ];
 
 export const WalletLayout = ({ children }: { children: React.ReactNode }) => {
-  const { setWalletDetails } = useStore(TokenViewStore, (state) => ({
-    setWalletDetails: state.setWalletDetails,
-  }));
+  const { setSmartContractWalletDetails } = useStore(
+    userWalletStore,
+    (state) => ({
+      setSmartContractWalletDetails: state.setSmartContactWalletDetails,
+    })
+  );
   const { mutate: deployWalletToChain } =
     trpc.smartContractWallet.deployToNewChain.useMutation({
       onSuccess() {
@@ -74,7 +77,7 @@ export const WalletLayout = ({ children }: { children: React.ReactNode }) => {
         // set the wallet detail so that we can use it elsewhere
         const walletDetail = walletDetails?.[0];
         if (walletDetail) {
-          setWalletDetails(walletDetail);
+          setSmartContractWalletDetails(walletDetail);
         }
 
         // set up new wallet if it doesn't exists

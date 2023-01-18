@@ -3,7 +3,7 @@ import { WalletConnectLegacySessionRequest } from "@components/pages/wallet/wall
 import { WalletConnectLegacySignMessage } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacySignMessage";
 import LegacySignClient from "@walletconnect/client";
 import type { IWalletConnectSession } from "@walletconnect/legacy-types";
-import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import { log } from "next-axiom";
 import { EIP155_SIGNING_METHODS } from "./methods";
 
@@ -22,7 +22,7 @@ export function createLegacySignClient({ uri }: { uri?: string }) {
     return;
   }
 
-  const { openModal } = walletConnectStore.getState();
+  const { openWalletConnectModal: openModal } = userWalletStore.getState();
   walletConnectLegacySignClient.on(
     "session_request",
     (error, payload: WalletConnectLegacySessionRequestProps) => {
@@ -77,7 +77,7 @@ const onCallRequest = async (payload: {
   method: string;
   params: unknown[];
 }) => {
-  const { openModal } = walletConnectStore.getState();
+  const { openWalletConnectModal: openModal } = userWalletStore.getState();
   if (!walletConnectLegacySignClient.session.peerMeta) {
     throw new Error("Missing connecting app details");
   }

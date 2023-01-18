@@ -1,9 +1,9 @@
 import { Button } from "@components/ui/input/Button";
+import { ErrorMessages } from "@utils/messages";
 import { walletConnectLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
-import { WebAuthnUtils } from "@utils/webAuthn";
 import type { IClientMeta } from "@walletconnect/legacy-types";
 import { getSdkError } from "@walletconnect/utils";
-import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import { WalletConnectProjectInfo } from "../WalletConnectProjectInfo";
 
 export type WalletConnectLegacySessionRequestProps = {
@@ -15,34 +15,25 @@ export const WalletConnectLegacySessionRequest = (
 ) => {
   const { params } = props;
   const [{ chainId, peerMeta }] = params;
-
-  const { closeModal, user } = walletConnectStore.getState();
+  const { closeWalletConnectModal, smartContractWalletDetails } =
+    userWalletStore.getState();
   const onApprove = async () => {
-    const wallet = WebAuthnUtils.getAssociatedEoaWallet({
-      chainId: chainId ?? 1,
-      deviceName: user.currentDeviceName,
-      userId: user.id,
-    });
-    if (!wallet) {
-      // TODO: make a toast to warn of error
-      return;
+    if (!smartContractWalletDetails) {
+      throw new Error(ErrorMessages.smartContractWalletDetailsMissing);
     }
     walletConnectLegacySignClient.approveSession({
-      accounts: [wallet.address],
+      accounts: [smartContractWalletDetails?.address],
       chainId: chainId ?? 1,
     });
-    walletConnectStore.setState({
-      currentSessionDetails: peerMeta,
-    });
-    closeModal();
+    closeWalletConnectModal();
   };
   const onReject = () => {
     walletConnectLegacySignClient.rejectSession(
       getSdkError("USER_REJECTED_METHODS")
     );
-    closeModal();
+    closeWalletConnectModal();
   };
-  walletConnectStore.setState({ onReject });
+  userWalletStore.setState({ onReject });
 
   return (
     <div>

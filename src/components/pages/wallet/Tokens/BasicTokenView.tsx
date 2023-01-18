@@ -1,12 +1,12 @@
-import { TokenViewStore } from "hooks/stores/useTokenStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import { useStore } from "zustand";
 import { EvmAddressDisplay } from "./EvmAddressDisplay";
 import { SendTokenButton } from "./SendTokenButton";
 import { TokenList } from "./TokenList";
 
 export const BasicTokenView = () => {
-  const { walletDetail } = useStore(TokenViewStore, (state) => ({
-    walletDetail: state.walletDetails,
+  const { walletDetail } = useStore(userWalletStore, (state) => ({
+    walletDetail: state.smartContractWalletDetails,
   }));
 
   return (
