@@ -36,6 +36,8 @@ export class ErrorMessages {
     "Missing Smart Contract Wallet details";
   static smartContractWalletAlreadyDeployed =
     "Smart contract wallet already deployed to given chain";
+  static missingEoaWallet = "Device is missing associated EOA wallet";
+  static missingEoaWalletPrivateKey = "Missing private key for EOA wallet";
 
   // WalletConnect
   static invalidUri =

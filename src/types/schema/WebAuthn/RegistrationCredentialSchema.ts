@@ -13,5 +13,6 @@ export const RegisterCredentialSchema = z.object({
   clientExtensionResults: ClientExtensionResultsSchema,
   transports: TransportSchema.optional(),
   eoaAddress: z.string(),
+  eoaEncryptedPrivateKey: z.string(),
 });
 export type RegisterCredentialType = z.infer<typeof RegisterCredentialSchema>;

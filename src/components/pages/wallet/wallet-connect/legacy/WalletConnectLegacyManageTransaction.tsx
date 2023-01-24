@@ -1,65 +1,49 @@
 import { Button } from "@components/ui/input/Button";
+import { ErrorMessages } from "@utils/messages";
 import { walletConnectLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
 import { WebAuthnUtils } from "@utils/webAuthn";
 import type { IClientMeta } from "@walletconnect/legacy-types";
 import { getSdkError } from "@walletconnect/utils";
-import { utils } from "ethers";
 import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import { WalletConnectProjectInfo } from "../WalletConnectProjectInfo";
 
-export type WalletConnectLegacySignMessageProps = {
+export type WalletConnectLegacyManageTransactionProps = {
   projectDetails: IClientMeta;
-  transactionDetails: { id: number; method: string; params: any[] };
+  transactionDetails: { id: number; method: string; params: unknown[] };
+  isSendTransaction: boolean;
 };
-
-/**
- * Converts hex to utf8 string if it is valid bytes
- */
-export function convertHexToUtf8(value: string) {
-  if (utils.isHexString(value)) {
-    return utils.toUtf8String(value);
-  }
-
-  return value;
-}
-
-/**
- * Gets message from various signing request methods by filtering out
- * a value that is not an address (thus is a message).
- * If it is a hex string, it gets converted to utf8 string
- */
-export function getSignParamsMessage(params: string[]) {
-  const message = params.filter((p) => !utils.isAddress(p))[0];
-  if (!message) {
-    return "";
-  }
-  return convertHexToUtf8(message);
-}
-
-export const WalletConnectLegacySignMessage = (
-  props: WalletConnectLegacySignMessageProps
+export const WalletConnectLegacyManageTransaction = (
+  props: WalletConnectLegacyManageTransactionProps
 ) => {
-  const { closeWalletConnectModal: closeModal } = userWalletStore.getState();
-  const message = getSignParamsMessage(props.transactionDetails.params);
-
+  console.log("props", props);
+  const { projectDetails, transactionDetails } = props;
+  const { closeWalletConnectModal, currentChainId } =
+    userWalletStore.getState();
   const onApprove = async () => {
     const wallet = await WebAuthnUtils.getAssociatedEoaWallet({
-      chainId: 1,
+      chainId: currentChainId,
     });
     if (!wallet) {
-      return;
+      throw new Error(ErrorMessages.missingEoaWallet);
     }
-    const signedMessage = await wallet.signMessage(
-      getSignParamsMessage(transactionDetails.params)
-    );
-    console.log("signedMessage", signedMessage);
+    let result: string;
+    if (props.isSendTransaction) {
+      // TODO: send things through the smart contract
+      const transaction = await wallet.sendTransaction(
+        transactionDetails.params[0] as any
+      );
+      result = transaction.hash || "";
+    } else {
+      result = await wallet.signTransaction(
+        transactionDetails.params[0] as any
+      );
+    }
     walletConnectLegacySignClient.approveRequest({
       id: transactionDetails.id,
       jsonrpc: "2.0",
-      result: signedMessage,
+      result,
     });
-
-    closeModal();
+    closeWalletConnectModal();
   };
   const onReject = () => {
     walletConnectLegacySignClient.rejectRequest({
@@ -69,18 +53,19 @@ export const WalletConnectLegacySignMessage = (
         message: getSdkError("USER_REJECTED_METHODS").message,
       },
     });
-    closeModal();
+    closeWalletConnectModal();
   };
   userWalletStore.setState({ onReject });
 
-  const { projectDetails, transactionDetails } = props;
   return (
-    <div className="px-10">
+    <div>
       <div>
         <WalletConnectProjectInfo {...projectDetails} />
       </div>
-      <div className="mt-5 whitespace-pre-wrap">{message}</div>
-      <div className="mt-5 flex-row justify-end">
+      <div>
+        <pre>{JSON.stringify(transactionDetails.params, null, 2)}</pre>
+      </div>
+      <div className="mt-3 flex-row justify-end">
         <Button
           className="btn mr-3 bg-neutral-600"
           onClick={() => {

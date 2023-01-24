@@ -1,11 +1,12 @@
 import { AUTH_COOKIE_NAME } from "@server/common/get-server-auth-session";
+import { DeviceAuthenticator } from "@server/db/modals/DeviceAuthenticator";
 import { User } from "@server/db/modals/User";
 import { TRPCError } from "@trpc/server";
 import { jwtCookie } from "@utils/jwtCookie";
 import { randomUUID } from "crypto";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
 import { UserRegistrationSchema } from "types/schema/registration/user";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const userRouter = router({
   verifyHandle: publicProcedure
@@ -44,5 +45,13 @@ export const userRouter = router({
   logout: publicProcedure.mutation(async ({ ctx }) => {
     await jwtCookie.expire(ctx.res, AUTH_COOKIE_NAME);
     return true;
+  }),
+  getCurrentEoaWallet: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+    const eoaWallet = await DeviceAuthenticator().getAssociatedEoaWallet({
+      deviceName: user.currentDeviceName,
+      userId: user.id,
+    });
+    return eoaWallet;
   }),
 });

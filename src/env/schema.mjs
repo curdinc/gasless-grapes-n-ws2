@@ -69,6 +69,7 @@ export const clientSchema = z.object({
   NEXT_PUBLIC_ALCHEMY_POLYGON_API_KEY: z.string().min(1),
   NEXT_PUBLIC_ALCHEMY_MUMBAI_API_KEY: z.string().min(1),
   NEXT_PUBLIC_TENDERLY_API_KEY: z.string().min(1),
+  NEXT_PUBLIC_EOA_ENCRYPTION_KEY: z.string(),
 });
 
 /**
@@ -78,6 +79,7 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
+  NEXT_PUBLIC_EOA_ENCRYPTION_KEY: process.env.NEXT_PUBLIC_EOA_ENCRYPTION_KEY,
   NEXT_PUBLIC_ALCHEMY_MAINNET_API_KEY:
     process.env.NEXT_PUBLIC_ALCHEMY_MAINNET_API_KEY,
   NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY:

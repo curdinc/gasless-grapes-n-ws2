@@ -1,9 +1,11 @@
 import { Button } from "@components/ui/input/Button";
+import { env } from "@env/client.mjs";
 import { startRegistration } from "@simplewebauthn/browser";
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   RegistrationCredentialJSON,
 } from "@simplewebauthn/typescript-types";
+import { ClientEncryption } from "@utils/clientEncryption";
 import { ErrorMessages } from "@utils/messages";
 import { Routes } from "@utils/routes";
 import { trpc } from "@utils/trpc";
@@ -67,12 +69,11 @@ export const RegisterDeviceButton = <T extends true | false>(
       const verificationResult = await verifyDeviceRegistration({
         ...attestationResponse,
         eoaAddress: wallet.address,
+        eoaEncryptedPrivateKey: await new ClientEncryption({
+          pwd: env.NEXT_PUBLIC_EOA_ENCRYPTION_KEY,
+        }).encrypt(wallet.privateKey),
       });
-      WebAuthnUtils.registerNewEoaToStorage(
-        verificationResult.user.id,
-        verificationResult.user.currentDeviceName,
-        wallet.privateKey
-      );
+
       WebAuthnUtils.redirectUser(redirectUrl, verificationResult.verified);
     } catch (e) {
       console.error("Error verifying device credentials", e);

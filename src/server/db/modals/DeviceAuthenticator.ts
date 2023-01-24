@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { ErrorMessages } from "@utils/messages";
 import { prisma, PrismaObject } from "../client";
 
 export function DeviceAuthenticator() {
@@ -51,6 +52,30 @@ export function DeviceAuthenticator() {
           counter: newCount,
         },
       });
+    },
+
+    async getAssociatedEoaWallet({
+      userId,
+      deviceName,
+    }: {
+      userId: string;
+      deviceName: string;
+    }) {
+      const eoaWallet = await prisma.deviceAuthenticator.findUnique({
+        where: {
+          userId_deviceName: {
+            deviceName,
+            userId,
+          },
+        },
+        select: {
+          EoaWallet: true,
+        },
+      });
+      if (!eoaWallet || !eoaWallet.EoaWallet) {
+        throw new Error(ErrorMessages.missingEoaWallet);
+      }
+      return eoaWallet.EoaWallet;
     },
   });
 }

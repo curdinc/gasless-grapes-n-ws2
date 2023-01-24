@@ -42,7 +42,8 @@ const OPEN_ZEPPELIN_API_KEY: Record<
 
 export async function deploySmartContractWallet(
   salt: string,
-  chain: SupportedChainType
+  chain: SupportedChainType,
+  ownerAddress: string
 ) {
   const credentials = OPEN_ZEPPELIN_API_KEY[chain];
   const provider = new DefenderRelayProvider(credentials);
@@ -51,11 +52,11 @@ export async function deploySmartContractWallet(
   });
 
   const walletFactoryInterface = new ethers.utils.Interface([
-    "function createWallet(bytes32 _salt) external returns(address)",
+    "function createWallet(bytes32 _salt, address _EOA) external returns(address)",
   ]);
   const transactionData = walletFactoryInterface.encodeFunctionData(
     "createWallet",
-    [salt]
+    [salt, ownerAddress]
   );
   const tx = await signer.sendTransaction({
     to: env.SCW_WALLET_FACTORY,

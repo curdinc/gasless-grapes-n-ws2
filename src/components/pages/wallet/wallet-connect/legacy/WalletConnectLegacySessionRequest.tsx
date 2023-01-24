@@ -25,6 +25,9 @@ export const WalletConnectLegacySessionRequest = (
       accounts: [smartContractWalletDetails?.address],
       chainId: chainId ?? 1,
     });
+    userWalletStore.setState({
+      currentChainId: chainId ?? 1,
+    });
     closeWalletConnectModal();
   };
   const onReject = () => {

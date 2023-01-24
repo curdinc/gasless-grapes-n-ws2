@@ -1,6 +1,10 @@
+import { env } from "@env/client.mjs";
 import { getDefaultProvider, Wallet } from "ethers";
+import { ClientEncryption } from "./clientEncryption";
 import { Links } from "./links";
+import { ErrorMessages } from "./messages";
 import { Routes } from "./routes";
+import { trpc } from "./trpc";
 
 export class WebAuthnUtils {
   static bufferToHexString(value: Buffer): string {
@@ -25,36 +29,22 @@ export class WebAuthnUtils {
     }
   }
 
-  static registerNewEoaToStorage(
-    userId: string,
-    deviceName: string,
-    privateKey: string
-  ) {
-    if (localStorage) {
-      localStorage.setItem(`${userId}-${deviceName}`, privateKey);
-      return true;
-    }
-    return false;
-  }
-  static getAssociatedEoaWallet({
-    userId,
-    deviceName,
-    chainId,
-  }: {
-    userId: string;
-    deviceName: string;
-    chainId: number;
-  }) {
-    if (localStorage) {
-      const privateKey = localStorage.getItem(`${userId}-${deviceName}`);
-      if (!privateKey) {
-        return null;
+  static async getAssociatedEoaWallet({ chainId }: { chainId: number }) {
+    const utils = trpc.useContext();
+    try {
+      const eoaWallet = await utils.user.getCurrentEoaWallet.fetch();
+      if (!eoaWallet.privateKey) {
+        throw new Error(ErrorMessages.missingEoaWalletPrivateKey);
       }
       return new Wallet(
-        privateKey,
+        await new ClientEncryption({
+          pwd: env.NEXT_PUBLIC_EOA_ENCRYPTION_KEY,
+        }).decrypt(eoaWallet.privateKey),
         getDefaultProvider(Links.rpcUrl({ chainId }))
       );
+    } catch (e) {
+      console.error("Error getting associated device wallet");
+      return null;
     }
-    return null;
   }
 }

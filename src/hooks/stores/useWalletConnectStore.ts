@@ -21,6 +21,7 @@ export const userWalletStore = createStore(
       eoaWallet: null as ethers.Wallet | null,
       modalError: "",
       isOpenWalletConnectModal: false,
+      currentChainId: 1,
       modalTitle: "",
       modalBody: null as React.ReactNode,
       onReject: null as (() => void) | null,

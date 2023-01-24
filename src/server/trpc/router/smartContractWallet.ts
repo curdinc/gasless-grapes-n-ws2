@@ -2,6 +2,7 @@ import {
   deploySmartContractWallet,
   getSmartContractWalletAddress,
 } from "@server/common/ethers";
+import { DeviceAuthenticator } from "@server/db/modals/DeviceAuthenticator";
 import { SmartContractWallet } from "@server/db/modals/smartContractWallet";
 import { SmartContractWalletDetails } from "@server/db/modals/smartContractWalletDetails";
 import { TRPCError } from "@trpc/server";
@@ -11,6 +12,7 @@ import {
   SmartContractWalletCreationSchema,
   SmartContractWalletDeploymentSchema,
 } from "types/schema/SmartContractWallet";
+import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 
 export const smartContractWalletRouter = router({
@@ -35,8 +37,13 @@ export const smartContractWalletRouter = router({
   deployToNewChain: protectedProcedure
     .input(SmartContractWalletDeploymentSchema)
     .mutation(async ({ input, ctx }) => {
+      const user = ctx.session.user;
       const smartContractWallet = await SmartContractWallet().getByAddress({
         walletAddress: input.walletAddress,
+      });
+      const eoaDetails = await DeviceAuthenticator().getAssociatedEoaWallet({
+        deviceName: user.currentDeviceName,
+        userId: user.id,
       });
       if (!smartContractWallet) {
         throw new TRPCError({
@@ -57,7 +64,8 @@ export const smartContractWalletRouter = router({
       const { creationSalt, id: smartContractWalletId } = smartContractWallet;
       const { txHash } = await deploySmartContractWallet(
         creationSalt,
-        input.chain
+        input.chain,
+        eoaDetails.address
       );
       console.log("SCW: deployed wallet for user", {
         creationSalt,
@@ -79,5 +87,18 @@ export const smartContractWalletRouter = router({
         type: input.type,
       });
       return wallets;
+    }),
+  sendTransaction: protectedProcedure
+    .input(
+      z.object({
+        data: z.any(),
+        walletAddress: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const smartContractWalletDetails =
+        await SmartContractWallet().getByAddress({
+          walletAddress: input.walletAddress,
+        });
     }),
 });
