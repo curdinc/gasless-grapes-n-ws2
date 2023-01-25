@@ -3,23 +3,24 @@ import { WalletConnectLayout } from "@components/layout/WalletConnectLayout";
 import { WalletLayout } from "@components/layout/WalletLayout";
 import { WalletConnectLegacyDisconnectButton } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacyDisconnectButton";
 import { WalletConnectProjectInfo } from "@components/pages/wallet/wallet-connect/WalletConnectProjectInfo";
-import { ok } from "assert";
-import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import type { NextPage } from "next";
 import { useStore } from "zustand";
 
 const WalletConnectPage: NextPage = () => {
-  const { currentSession } = useStore(walletConnectStore, (state) => {
+  const { currentSession } = useStore(userWalletStore, (state) => {
     return {
       currentSession: state.currentSessionDetails,
     };
   });
-
   if (!currentSession) {
     return <div className="mt-10">No Active Sessions</div>;
   }
   return (
     <div className="mt-10">
+      <div className="mb-5 font-heading text-lg">
+        Listening to request from:
+      </div>
       <div className="flex-row justify-between">
         <WalletConnectProjectInfo {...currentSession} />
         <WalletConnectLegacyDisconnectButton />

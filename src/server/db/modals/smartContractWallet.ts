@@ -13,11 +13,13 @@ export function SmartContractWallet() {
     async create({
       userId,
       walletSalt,
+      eoaAddress,
       address,
       type,
     }: {
       userId: string;
       walletSalt: string;
+      eoaAddress: string;
       address: string;
       type: SmartContractWalletOptionsType;
     }) {
@@ -38,6 +40,7 @@ export function SmartContractWallet() {
         data: {
           address,
           creationSalt: walletSalt,
+          creationEoa: eoaAddress,
           userId,
           type: SmartContractWalletOptions.Default,
         },

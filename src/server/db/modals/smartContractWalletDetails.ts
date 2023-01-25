@@ -5,18 +5,18 @@ export function SmartContractWalletDetails() {
   return Object.assign(PrismaObject, {
     async deployed({
       chain,
-      deploymentHash,
+      openZeppelinTransactionId,
       smartContractWalletId,
     }: {
       chain: SupportedChainType;
-      deploymentHash: string;
+      openZeppelinTransactionId: string;
       smartContractWalletId: string;
     }) {
       return await prisma.smartContractWalletDetails.create({
         data: {
           chain: chain,
           deployedAt: new Date(),
-          deploymentHash,
+          openZeppelinTransactionId,
           smartContractWalletId,
         },
       });

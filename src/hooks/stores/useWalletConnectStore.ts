@@ -1,13 +1,14 @@
 import type { SignClientTypes } from "@walletconnect/types";
 import { useDialogState } from "ariakit";
-import { Wallet } from "ethers";
+import type { ethers } from "ethers";
 import type React from "react";
 import { useEffect } from "react";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
+import type { SmartContractWalletType } from "types/schema/SmartContractWallet";
 import { createStore, useStore } from "zustand";
 import { combine } from "zustand/middleware";
 
-export const walletConnectStore = createStore(
+export const userWalletStore = createStore(
   combine(
     {
       accountsToConnect: [] as string[],
@@ -17,16 +18,19 @@ export const walletConnectStore = createStore(
         id: "",
         state: "pendingAuthentication",
       } as AuthUserType,
-      wallet: Wallet,
-      currentSessionDetails: null as SignClientTypes.Metadata | null,
-      isOpenModal: false,
+      smartContractWalletDetails: null as SmartContractWalletType | null,
+      currentSessionDetails: null as null | SignClientTypes.Metadata,
+      eoaWallet: null as ethers.Wallet | null,
+      modalError: "",
+      isOpenWalletConnectModal: false,
+      currentChainId: 5,
       modalTitle: "",
       modalBody: null as React.ReactNode,
       onReject: null as (() => void) | null,
     },
     (set) => {
       return {
-        openModal: ({
+        openWalletConnectModal: ({
           modalBody,
           modalTitle,
         }: {
@@ -34,13 +38,13 @@ export const walletConnectStore = createStore(
           modalBody: React.ReactNode;
         }) =>
           set({
-            isOpenModal: true,
+            isOpenWalletConnectModal: true,
             modalTitle: modalTitle,
             modalBody: modalBody,
           }),
-        closeModal: () =>
+        closeWalletConnectModal: () =>
           set({
-            isOpenModal: false,
+            isOpenWalletConnectModal: false,
             modalBody: null,
             modalTitle: "",
           }),
@@ -48,6 +52,14 @@ export const walletConnectStore = createStore(
           set({
             accountsToConnect: accounts,
           }),
+        setSmartContactWalletDetails(
+          smartContractWalletDetails: SmartContractWalletType
+        ) {
+          set({ smartContractWalletDetails });
+        },
+        setEoaWalletDetails(eoaWallet: ethers.Wallet) {
+          set({ eoaWallet });
+        },
       };
     }
   )
@@ -55,12 +67,12 @@ export const walletConnectStore = createStore(
 
 export const useWalletConnectDialogState = () => {
   const { openModal, closeModal, isOpenModal, onReject } = useStore(
-    walletConnectStore,
+    userWalletStore,
     (state) => {
       return {
-        isOpenModal: state.isOpenModal,
-        closeModal: state.closeModal,
-        openModal: state.openModal,
+        isOpenModal: state.isOpenWalletConnectModal,
+        closeModal: state.closeWalletConnectModal,
+        openModal: state.openWalletConnectModal,
         onReject: state.onReject,
       };
     }

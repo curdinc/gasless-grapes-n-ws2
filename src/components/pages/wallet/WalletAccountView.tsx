@@ -1,5 +1,5 @@
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
-import { TokenViewStore } from "hooks/stores/useTokenStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import { useStore } from "zustand";
 import { AutoTokensView } from "./Tokens/AutoTokensView";
 
@@ -7,8 +7,8 @@ export default function WalletAccountView() {
   const defaultSelectedId = "default-selected-tab";
   const tab = useTabState({ defaultSelectedId });
 
-  const { walletDetail } = useStore(TokenViewStore, (state) => ({
-    walletDetail: state.walletDetails,
+  const { walletDetail } = useStore(userWalletStore, (state) => ({
+    walletDetail: state.smartContractWalletDetails,
   }));
 
   return (

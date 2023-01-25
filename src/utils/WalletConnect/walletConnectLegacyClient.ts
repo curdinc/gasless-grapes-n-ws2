@@ -1,9 +1,10 @@
+import { WalletConnectLegacyManageTransaction } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacyManageTransaction";
 import type { WalletConnectLegacySessionRequestProps } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacySessionRequest";
 import { WalletConnectLegacySessionRequest } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacySessionRequest";
 import { WalletConnectLegacySignMessage } from "@components/pages/wallet/wallet-connect/legacy/WalletConnectLegacySignMessage";
 import LegacySignClient from "@walletconnect/client";
 import type { IWalletConnectSession } from "@walletconnect/legacy-types";
-import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import { log } from "next-axiom";
 import { EIP155_SIGNING_METHODS } from "./methods";
 
@@ -18,11 +19,12 @@ export function createLegacySignClient({ uri }: { uri?: string }) {
   } else if (!walletConnectLegacySignClient && getCachedLegacySession()) {
     const session = getCachedLegacySession();
     walletConnectLegacySignClient = new LegacySignClient({ session });
+    userWalletStore.setState({ currentSessionDetails: session?.peerMeta });
   } else {
     return;
   }
 
-  const { openModal } = walletConnectStore.getState();
+  const { openWalletConnectModal: openModal } = userWalletStore.getState();
   walletConnectLegacySignClient.on(
     "session_request",
     (error, payload: WalletConnectLegacySessionRequestProps) => {
@@ -77,12 +79,13 @@ const onCallRequest = async (payload: {
   method: string;
   params: unknown[];
 }) => {
-  const { openModal } = walletConnectStore.getState();
+  const { openWalletConnectModal: openModal } = userWalletStore.getState();
   if (!walletConnectLegacySignClient.session.peerMeta) {
     throw new Error("Missing connecting app details");
   }
+  const { id, method, params } = payload;
 
-  switch (payload.method) {
+  switch (method) {
     case EIP155_SIGNING_METHODS.ETH_SIGN:
     case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
       return openModal({
@@ -102,10 +105,32 @@ const onCallRequest = async (payload: {
     // });
 
     case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
+      return openModal({
+        modalTitle: "Session Connection",
+        modalBody: WalletConnectLegacyManageTransaction({
+          projectDetails: walletConnectLegacySignClient.session.peerMeta,
+          transactionDetails: {
+            id,
+            method,
+            params,
+          },
+          isSendTransaction: true,
+        }),
+      });
     case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-    // openModal({
-    //   modalTitle: "Sign Transaction",
-    // });
+      // tODO: Fix this signing transactions does not work now
+      return openModal({
+        modalTitle: "Session Connection",
+        modalBody: WalletConnectLegacyManageTransaction({
+          projectDetails: walletConnectLegacySignClient.session.peerMeta,
+          transactionDetails: {
+            id,
+            method,
+            params,
+          },
+          isSendTransaction: false,
+        }),
+      });
 
     default:
       alert(`${payload.method} is not supported for WalletConnect v1`);

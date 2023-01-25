@@ -123,6 +123,7 @@ export const webAuthnRegistrationProcedures = {
             EoaWallet: {
               create: {
                 address: input.eoaAddress,
+                privateKey: input.eoaEncryptedPrivateKey,
               },
             },
           },

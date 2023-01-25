@@ -32,14 +32,20 @@ export class ErrorMessages {
   static tooManyDefaultSmartContractWallets =
     "Too many default smart contract wallets";
   static invalidWalletAddress = "Invalid wallet address given";
+  static missingSmartContractWalletDetails =
+    "Missing Smart Contract Wallet details";
   static smartContractWalletAlreadyDeployed =
     "Smart contract wallet already deployed to given chain";
+  static missingEoaWallet = "Device is missing associated EOA wallet";
+  static missingEoaWalletPrivateKey = "Missing private key for EOA wallet";
+  static invalidTransactionRequest = "Invalid transaction request";
+  static unknownChainId = "Unknown Chain Id given";
 
   // WalletConnect
   static invalidUri =
     "The link provided is invalid. Please check the link you copied and try again.";
   static missingUserWallet =
-    "The current device has not been registered.Please register it first before attempting to connect via Wallet Connect";
+    "The current device has not been registered. Please register it first before attempting to connect via Wallet Connect";
   static WalletConnect = {
     invalidUri: "Missing or invalid. pair() uri:",
   };

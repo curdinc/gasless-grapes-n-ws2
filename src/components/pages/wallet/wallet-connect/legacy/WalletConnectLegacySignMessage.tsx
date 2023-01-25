@@ -4,7 +4,7 @@ import { WebAuthnUtils } from "@utils/webAuthn";
 import type { IClientMeta } from "@walletconnect/legacy-types";
 import { getSdkError } from "@walletconnect/utils";
 import { utils } from "ethers";
-import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import { WalletConnectProjectInfo } from "../WalletConnectProjectInfo";
 
 export type WalletConnectLegacySignMessageProps = {
@@ -39,14 +39,12 @@ export function getSignParamsMessage(params: string[]) {
 export const WalletConnectLegacySignMessage = (
   props: WalletConnectLegacySignMessageProps
 ) => {
-  const { closeModal, user } = walletConnectStore.getState();
+  const { closeWalletConnectModal: closeModal } = userWalletStore.getState();
   const message = getSignParamsMessage(props.transactionDetails.params);
 
   const onApprove = async () => {
-    const wallet = WebAuthnUtils.getAssociatedEoaWallet({
-      userId: user.id,
+    const wallet = await WebAuthnUtils.getAssociatedEoaWallet({
       chainId: 1,
-      deviceName: user.currentDeviceName,
     });
     if (!wallet) {
       return;
@@ -73,7 +71,7 @@ export const WalletConnectLegacySignMessage = (
     });
     closeModal();
   };
-  walletConnectStore.setState({ onReject });
+  userWalletStore.setState({ onReject });
 
   const { projectDetails, transactionDetails } = props;
   return (
