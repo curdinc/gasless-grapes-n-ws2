@@ -20,7 +20,14 @@ export const smartContractWalletRouter = router({
     .input(SmartContractWalletCreationSchema)
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.session;
-      const { salt, walletAddress } = await getSmartContractWalletAddress();
+
+      const eoaWallet = await DeviceAuthenticator().getAssociatedEoaWallet({
+        deviceName: user.currentDeviceName,
+        userId: user.id,
+      });
+      const { salt, walletAddress } = await getSmartContractWalletAddress({
+        eoaWalletAddress: eoaWallet.address,
+      });
       console.log("SCW: Creating wallet for user", { salt, userId: user.id });
 
       // store the wallet address and the hash used to generate the particular address
@@ -29,6 +36,7 @@ export const smartContractWalletRouter = router({
         userId: user.id,
         walletSalt: salt,
         type: input.type,
+        eoaAddress: eoaWallet.address,
       });
       console.log("SCW: Added DB entry for user", { salt, userId: user.id });
 

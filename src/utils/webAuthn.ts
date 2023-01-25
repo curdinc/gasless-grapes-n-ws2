@@ -4,7 +4,7 @@ import { ClientEncryption } from "./clientEncryption";
 import { Links } from "./links";
 import { ErrorMessages } from "./messages";
 import { Routes } from "./routes";
-import { trpc } from "./trpc";
+import { vanillaTrpcClient } from "./trpc";
 
 export class WebAuthnUtils {
   static bufferToHexString(value: Buffer): string {
@@ -30,9 +30,9 @@ export class WebAuthnUtils {
   }
 
   static async getAssociatedEoaWallet({ chainId }: { chainId: number }) {
-    const utils = trpc.useContext();
     try {
-      const eoaWallet = await utils.user.getCurrentEoaWallet.fetch();
+      const eoaWallet =
+        await vanillaTrpcClient.user.getCurrentEoaWallet.query();
       if (!eoaWallet.privateKey) {
         throw new Error(ErrorMessages.missingEoaWalletPrivateKey);
       }

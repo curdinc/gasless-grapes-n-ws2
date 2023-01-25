@@ -60,6 +60,7 @@ export const WalletLayout = ({ children }: { children: React.ReactNode }) => {
   const { mutate: createFirstWallet } =
     trpc.smartContractWallet.createNewWallet.useMutation({
       onSuccess({ smartContractWallet }) {
+        refetchWalletDetails();
         deployWalletToChain({
           chain: "Goerli",
           walletAddress: smartContractWallet.address,

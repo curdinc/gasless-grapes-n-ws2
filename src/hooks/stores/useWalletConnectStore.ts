@@ -1,3 +1,4 @@
+import type { SignClientTypes } from "@walletconnect/types";
 import { useDialogState } from "ariakit";
 import type { ethers } from "ethers";
 import type React from "react";
@@ -18,6 +19,7 @@ export const userWalletStore = createStore(
         state: "pendingAuthentication",
       } as AuthUserType,
       smartContractWalletDetails: null as SmartContractWalletType | null,
+      currentSessionDetails: null as null | SignClientTypes.Metadata,
       eoaWallet: null as ethers.Wallet | null,
       modalError: "",
       isOpenWalletConnectModal: false,

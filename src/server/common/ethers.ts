@@ -8,16 +8,21 @@ import {
 import { ethers } from "ethers";
 import type { SupportedChainType } from "types/schema/blockchain/chains";
 
-export async function getSmartContractWalletAddress() {
+export async function getSmartContractWalletAddress({
+  eoaWalletAddress,
+}: {
+  eoaWalletAddress: string;
+}) {
   const provider = ethers.getDefaultProvider(Links.rpcUrl({ chain: "Goerli" }));
   const walletAddressInterface = new ethers.utils.Interface([
-    "function calcWalletAddress(bytes32 _salt) external view returns(address)",
+    "function calcWalletAddress(bytes32 _salt, address _EOA) external view returns(address)",
   ]);
   const salt = ethers.utils.formatBytes32String(makeId(31));
   const result = await provider.call({
     to: env.SCW_WALLET_FACTORY,
     data: walletAddressInterface.encodeFunctionData("calcWalletAddress", [
       salt,
+      eoaWalletAddress,
     ]),
   });
   const value = walletAddressInterface.decodeFunctionResult(

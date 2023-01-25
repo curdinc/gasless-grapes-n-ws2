@@ -1,9 +1,11 @@
 import { Button } from "@components/ui/input/Button";
 import { ErrorMessages } from "@utils/messages";
+import { Routes } from "@utils/routes";
 import { walletConnectLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
 import type { IClientMeta } from "@walletconnect/legacy-types";
 import { getSdkError } from "@walletconnect/utils";
 import { userWalletStore } from "hooks/stores/useWalletConnectStore";
+import router from "next/router";
 import { WalletConnectProjectInfo } from "../WalletConnectProjectInfo";
 
 export type WalletConnectLegacySessionRequestProps = {
@@ -23,11 +25,13 @@ export const WalletConnectLegacySessionRequest = (
     }
     walletConnectLegacySignClient.approveSession({
       accounts: [smartContractWalletDetails?.address],
-      chainId: chainId ?? 1,
+      chainId: chainId ?? 5,
     });
     userWalletStore.setState({
-      currentChainId: chainId ?? 1,
+      currentChainId: chainId ?? 5,
+      currentSessionDetails: peerMeta,
     });
+    router.push(Routes.wallet.walletConnect);
     closeWalletConnectModal();
   };
   const onReject = () => {

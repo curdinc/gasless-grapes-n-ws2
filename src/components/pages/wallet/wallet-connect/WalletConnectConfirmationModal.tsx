@@ -1,5 +1,4 @@
 import { Inter, Nunito } from "@next/font/google";
-import { trpc } from "@utils/trpc";
 import { createSignClient } from "@utils/WalletConnect/walletConnectClient";
 import { createLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
 import { Dialog, DialogHeading } from "ariakit";
@@ -24,15 +23,6 @@ export function WalletConnectConfirmationModal() {
     createSignClient();
     createLegacySignClient({});
   }, []);
-
-  const { data: user } = trpc.user.me.useQuery();
-  useEffect(() => {
-    if (user) {
-      userWalletStore.setState({
-        user,
-      });
-    }
-  }, [user]);
 
   const { modalBody, modalTitle } = useStore(userWalletStore, (state) => {
     return {

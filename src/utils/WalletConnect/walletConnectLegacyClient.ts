@@ -19,6 +19,7 @@ export function createLegacySignClient({ uri }: { uri?: string }) {
   } else if (!walletConnectLegacySignClient && getCachedLegacySession()) {
     const session = getCachedLegacySession();
     walletConnectLegacySignClient = new LegacySignClient({ session });
+    userWalletStore.setState({ currentSessionDetails: session?.peerMeta });
   } else {
     return;
   }

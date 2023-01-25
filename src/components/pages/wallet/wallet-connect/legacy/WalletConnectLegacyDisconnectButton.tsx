@@ -1,13 +1,13 @@
 import { Button } from "@components/ui/input/Button";
 import { walletConnectLegacySignClient } from "@utils/WalletConnect/walletConnectLegacyClient";
-import { walletConnectStore } from "hooks/stores/useWalletConnectStore";
+import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 
 export const WalletConnectLegacyDisconnectButton = () => {
   return (
     <Button
       onClick={async () => {
+        userWalletStore.setState({ currentSessionDetails: null });
         await walletConnectLegacySignClient?.killSession();
-        walletConnectStore.setState({ currentSessionDetails: null });
       }}
       className="btn"
     >
