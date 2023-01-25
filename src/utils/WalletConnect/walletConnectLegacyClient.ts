@@ -118,6 +118,7 @@ const onCallRequest = async (payload: {
         }),
       });
     case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
+      // tODO: Fix this signing transactions does not work now
       return openModal({
         modalTitle: "Session Connection",
         modalBody: WalletConnectLegacyManageTransaction({
