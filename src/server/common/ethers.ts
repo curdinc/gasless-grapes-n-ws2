@@ -103,7 +103,7 @@ export async function sendOneTransaction({
   ]);
 
   const tx = await relayer.sendTransaction({
-    to: env.SCW_WALLET_FACTORY,
+    to: transaction.from,
     data: transactionData,
     speed: "fast",
     gasLimit: 10_000_000,
