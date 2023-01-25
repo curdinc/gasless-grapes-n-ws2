@@ -1,18 +1,20 @@
 import {
   deploySmartContractWallet,
   getSmartContractWalletAddress,
+  sendOneTransaction,
 } from "@server/common/ethers";
 import { DeviceAuthenticator } from "@server/db/modals/DeviceAuthenticator";
 import { SmartContractWallet } from "@server/db/modals/smartContractWallet";
 import { SmartContractWalletDetails } from "@server/db/modals/smartContractWalletDetails";
 import { TRPCError } from "@trpc/server";
 import { ErrorMessages } from "@utils/messages";
+import { BigNumber } from "ethers";
 import {
   FetchSmartContractWalletByTypeSchema,
+  SendSmartContractWalletTransactionSchema,
   SmartContractWalletCreationSchema,
   SmartContractWalletDeploymentSchema,
 } from "types/schema/SmartContractWallet";
-import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 
 export const smartContractWalletRouter = router({
@@ -70,19 +72,21 @@ export const smartContractWalletRouter = router({
         });
       }
       const { creationSalt, id: smartContractWalletId } = smartContractWallet;
-      const { txHash } = await deploySmartContractWallet(
-        creationSalt,
-        input.chain,
-        eoaDetails.address
-      );
+      const { openZeppelinTransactionId, txHash } =
+        await deploySmartContractWallet(
+          creationSalt,
+          input.chain,
+          eoaDetails.address
+        );
       console.log("SCW: deployed wallet for user", {
         creationSalt,
         userId: ctx.session.user.id,
+        openZeppelinTransactionId,
         txHash,
       });
       const deploymentDetails = await SmartContractWalletDetails().deployed({
         chain: input.chain,
-        deploymentHash: txHash,
+        openZeppelinTransactionId,
         smartContractWalletId: smartContractWalletId,
       });
       return { deploymentDetails };
@@ -97,16 +101,32 @@ export const smartContractWalletRouter = router({
       return wallets;
     }),
   sendTransaction: protectedProcedure
-    .input(
-      z.object({
-        data: z.any(),
-        walletAddress: z.string(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
+    .input(SendSmartContractWalletTransactionSchema)
+    .mutation(async ({ input }) => {
+      console.log("receive send transaction request ", input);
       const smartContractWalletDetails =
         await SmartContractWallet().getByAddress({
           walletAddress: input.walletAddress,
         });
+      console.log("smartContractWalletDetails", smartContractWalletDetails);
+      if (
+        !smartContractWalletDetails ||
+        !smartContractWalletDetails?.SmartContractWalletDetails.filter(
+          (details) => details.chain === input.chain
+        ).length
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: ErrorMessages.missingSmartContractWalletDetails,
+        });
+      }
+      console.log("sending transaction");
+      const transaction = await sendOneTransaction({
+        nonce: BigNumber.from(input.nonce),
+        chain: input.chain,
+        signature: input.signature,
+        transaction: input.transaction,
+      });
+      return transaction;
     }),
 });

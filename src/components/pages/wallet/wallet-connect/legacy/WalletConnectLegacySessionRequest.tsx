@@ -21,7 +21,7 @@ export const WalletConnectLegacySessionRequest = (
     userWalletStore.getState();
   const onApprove = async () => {
     if (!smartContractWalletDetails) {
-      throw new Error(ErrorMessages.smartContractWalletDetailsMissing);
+      throw new Error(ErrorMessages.missingSmartContractWalletDetails);
     }
     walletConnectLegacySignClient.approveSession({
       accounts: [smartContractWalletDetails?.address],
