@@ -4,6 +4,7 @@ import type { ethers } from "ethers";
 import type React from "react";
 import { useEffect } from "react";
 import type { AuthUserType } from "types/schema/AuthUserSchema";
+import type { SupportedChainIdsType } from "types/schema/blockchain/chains";
 import type { SmartContractWalletType } from "types/schema/SmartContractWallet";
 import { createStore, useStore } from "zustand";
 import { combine } from "zustand/middleware";
@@ -23,7 +24,7 @@ export const userWalletStore = createStore(
       eoaWallet: null as ethers.Wallet | null,
       modalError: "",
       isOpenWalletConnectModal: false,
-      currentChainId: 5,
+      currentChainId: 5 as SupportedChainIdsType,
       modalTitle: "",
       modalBody: null as React.ReactNode,
       onReject: null as (() => void) | null,

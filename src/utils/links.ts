@@ -1,6 +1,7 @@
 import { env } from "@env/client.mjs";
 import type {
   AlchemyChainType,
+  SupportedChainIdsType,
   SupportedChainType,
   TenderlyChainType,
 } from "types/schema/blockchain/chains";
@@ -28,7 +29,38 @@ export class Links {
     }
   };
 
-  static rpcUrl(args: { chainId: number } | { chain: SupportedChainType }) {
+  static scannerUrl({
+    chainId,
+    hash,
+    type,
+  }: {
+    hash: string;
+    chainId: SupportedChainIdsType;
+    type: "transaction" | "address";
+  }) {
+    switch (chainId) {
+      case 1:
+        return `https://etherscan.io/${
+          type === "address" ? "address" : "tx"
+        }/${hash}`;
+      case 5:
+        return `https://goerli.etherscan.io/${
+          type === "address" ? "address" : "tx"
+        }/${hash}`;
+      case 80001:
+        return `https://mumbai.polygonscan.com/${
+          type === "address" ? "address" : "tx"
+        }/${hash}`;
+      case 137:
+        return `https://polygonscan.com/${
+          type === "address" ? "address" : "tx"
+        }/${hash}`;
+    }
+  }
+
+  static rpcUrl(
+    args: { chainId: SupportedChainIdsType } | { chain: SupportedChainType }
+  ) {
     if ("chain" in args) {
       const chain = args.chain;
       switch (chain) {
