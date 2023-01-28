@@ -27,6 +27,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.33.0
   '@typescript-eslint/parser': ^5.33.0
   '@upstash/redis': ^1.18.4
+  '@vercel/analytics': ^0.1.8
   '@walletconnect/legacy-types': 2.0.0-rc.0
   '@walletconnect/sign-client': ^2.2.0
   '@walletconnect/types': ^2.2.0
@@ -86,6 +87,7 @@ dependencies:
   '@trpc/react-query': 10.7.0_x4ie6nhblo2vtx2aafrgzlfqy4
   '@trpc/server': 10.7.0
   '@upstash/redis': 1.18.4
+  '@vercel/analytics': 0.1.8_react@18.2.0
   '@walletconnect/legacy-types': 2.0.0-rc.0
   '@walletconnect/sign-client': 2.2.0
   '@walletconnect/utils': 2.2.1
@@ -1635,6 +1637,14 @@ packages:
       isomorphic-fetch: 3.0.0
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /@vercel/analytics/0.1.8_react@18.2.0:
+    resolution: {integrity: sha512-PQrOI8BJ9qUiVJuQfnKiJd15eDjDJH9TBKsNeMrtelT4NAk7d9mBVz1CoZkvoFnHQ0OW7Xnqmr1F2nScfAnznQ==}
+    peerDependencies:
+      react: ^16.8||^17||^18
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /@wagmi/chains/0.1.7:

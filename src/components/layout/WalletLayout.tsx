@@ -7,11 +7,7 @@ import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import {
-  IoListOutline,
-  IoSettingsOutline,
-  IoWalletOutline,
-} from "react-icons/io5";
+import { IoListOutline, IoWalletOutline } from "react-icons/io5";
 import { SmartContractWalletOptions } from "types/schema/SmartContractWallet";
 import { useStore } from "zustand";
 
@@ -37,11 +33,11 @@ const links: Array<{ icon: JSX.Element; value: string; link: string }> = [
     link: Routes.wallet.walletConnect,
     value: "Wallet Connect",
   },
-  {
-    icon: <IoSettingsOutline className="mr-2" />,
-    link: Routes.wallet.settings,
-    value: "Settings",
-  },
+  // {
+  //   icon: <IoSettingsOutline className="mr-2" />,
+  //   link: Routes.wallet.settings,
+  //   value: "Settings",
+  // },
 ];
 
 export const WalletLayout = ({ children }: { children: React.ReactNode }) => {
