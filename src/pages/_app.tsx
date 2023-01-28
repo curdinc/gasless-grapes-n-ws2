@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import type { AppWithLayoutType } from "next/app";
+import Head from "next/head";
 
 const MyApp: AppWithLayoutType<{ session: Session | null }> = ({
   Component,
@@ -17,6 +18,14 @@ const MyApp: AppWithLayoutType<{ session: Session | null }> = ({
     ((page: React.ReactNode) => <BaseLayout>{page}</BaseLayout>);
   return (
     <>
+      <Head>
+        <title>Gasless Grapes | Web3 Wallet</title>
+        <meta
+          name="description"
+          content="Home of the world's first gasless web3 wallet"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <SessionProvider session={session}>
         {getLayout(<Component {...pageProps} />)}
       </SessionProvider>
