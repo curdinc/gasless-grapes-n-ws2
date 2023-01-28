@@ -42,7 +42,6 @@ const TransactionsPage: NextPage = () => {
                 : `- ${ethers.utils.formatEther(transaction.value)} ETH`;
             }
 
-            console.log("transactions", transactions);
             return (
               <div
                 className="my-1 flex-row items-center justify-between rounded-xl px-5 py-3 transition-colors hover:bg-neutral-700"
