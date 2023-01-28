@@ -24,6 +24,20 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
         <Link href={Routes.home} className="font-heading text-xl">
           🍇 Gasless Grapes
         </Link>
+        {router.pathname !== Routes.home && (
+          <p>
+            Note: This is still an early prototype, use at your own risk.{" "}
+            <a
+              href="https://discord.gg/h3BzmdCW"
+              target="_blank"
+              rel="noreferrer"
+              className="link"
+            >
+              Chat with us on Discord
+            </a>{" "}
+            to help shape the future of Gasless Grapes!
+          </p>
+        )}
         {router.pathname === Routes.home && (
           <a className="link mr-3" href={Routes.wallet.home}>
             Try Alpha

@@ -34,6 +34,18 @@ export class Blockchain {
         return 137;
     }
   }
+  static chainIdToL1Name(chainId: number): SupportedChainType {
+    switch (chainId) {
+      case 5:
+      case 1:
+        return "Ethereum";
+      case 137:
+      case 80001:
+        return "Polygon";
+      default:
+        throw new Error(ErrorMessages.unknownChainId);
+    }
+  }
   static chainIdToName(chainId: number): SupportedChainType {
     switch (chainId) {
       case 1:

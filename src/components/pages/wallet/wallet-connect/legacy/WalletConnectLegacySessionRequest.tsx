@@ -6,6 +6,7 @@ import type { IClientMeta } from "@walletconnect/legacy-types";
 import { getSdkError } from "@walletconnect/utils";
 import { userWalletStore } from "hooks/stores/useWalletConnectStore";
 import router from "next/router";
+import { SupportedChainIdsSchema } from "types/schema/blockchain/chains";
 import { WalletConnectProjectInfo } from "../WalletConnectProjectInfo";
 
 export type WalletConnectLegacySessionRequestProps = {
@@ -23,12 +24,17 @@ export const WalletConnectLegacySessionRequest = (
     if (!smartContractWalletDetails) {
       throw new Error(ErrorMessages.missingSmartContractWalletDetails);
     }
+    const maybeParsedChainId = SupportedChainIdsSchema.safeParse(chainId);
+    const parsedChainId = maybeParsedChainId.success
+      ? maybeParsedChainId.data
+      : undefined;
+
     walletConnectLegacySignClient.approveSession({
       accounts: [smartContractWalletDetails?.address],
-      chainId: chainId ?? 5,
+      chainId: parsedChainId ?? 5,
     });
     userWalletStore.setState({
-      currentChainId: chainId ?? 5,
+      currentChainId: parsedChainId ?? 5,
       currentSessionDetails: peerMeta,
     });
     router.push(Routes.wallet.walletConnect);

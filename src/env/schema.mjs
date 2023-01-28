@@ -29,6 +29,8 @@ export const serverSchema = z.object({
   SCW_WALLET_FACTORY: z.string(),
   SCW_WALLET_BEACON: z.string(),
   SCW_WALLET_BEACON_UPGRADEABLE: z.string(),
+  ETH_BLOCK_EXPLORER_API_KEY: z.string(),
+  POLYGON_BLOCK_EXPLORER_API_KEY: z.string(),
 });
 
 /**
@@ -52,6 +54,8 @@ export const serverEnv = {
   SCW_WALLET_FACTORY: process.env.SCW_WALLET_FACTORY,
   SCW_WALLET_BEACON: process.env.SCW_WALLET_BEACON,
   SCW_WALLET_BEACON_UPGRADEABLE: process.env.SCW_WALLET_BEACON_UPGRADEABLE,
+  ETH_BLOCK_EXPLORER_API_KEY: process.env.ETH_BLOCK_EXPLORER_API_KEY,
+  POLYGON_BLOCK_EXPLORER_API_KEY: process.env.POLYGON_BLOCK_EXPLORER_API_KEY,
 };
 
 /**

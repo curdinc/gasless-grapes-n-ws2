@@ -1,5 +1,8 @@
 import { env } from "@env/server.mjs";
-import type { TransactionRequest } from "@ethersproject/abstract-provider";
+import type {
+  TransactionRequest,
+  TransactionResponse,
+} from "@ethersproject/abstract-provider";
 import { Links } from "@utils/links";
 import { ErrorMessages } from "@utils/messages";
 import { makeId } from "@utils/randomId";
@@ -67,6 +70,19 @@ export async function deploySmartContractWallet(
     gasLimit: 1_000_000,
   });
   return { openZeppelinTransactionId: tx.transactionId, txHash: tx.hash };
+}
+
+export function decodeSendOneTransactionInput(
+  transaction: TransactionResponse
+) {
+  const walletFactoryInterface = new ethers.utils.Interface([
+    "function execute(tuple(uint256 gasLimit, address target, uint256 value, bytes data) calldata transaction, uint256 nonce, bytes memory signature) external ",
+  ]);
+  const inputArgs = walletFactoryInterface.decodeFunctionData(
+    "execute",
+    transaction.data
+  );
+  return inputArgs;
 }
 
 export async function sendOneTransaction({

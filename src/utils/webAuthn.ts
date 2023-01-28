@@ -1,5 +1,6 @@
 import { env } from "@env/client.mjs";
 import { getDefaultProvider, Wallet } from "ethers";
+import type { SupportedChainIdsType } from "types/schema/blockchain/chains";
 import { ClientEncryption } from "./clientEncryption";
 import { Links } from "./links";
 import { ErrorMessages } from "./messages";
@@ -29,7 +30,11 @@ export class WebAuthnUtils {
     }
   }
 
-  static async getAssociatedEoaWallet({ chainId }: { chainId: number }) {
+  static async getAssociatedEoaWallet({
+    chainId,
+  }: {
+    chainId: SupportedChainIdsType;
+  }) {
     try {
       const eoaWallet =
         await vanillaTrpcClient.user.getCurrentEoaWallet.query();

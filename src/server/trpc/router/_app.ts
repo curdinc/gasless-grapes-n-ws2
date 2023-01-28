@@ -5,6 +5,7 @@ import { siweRouter } from "./signInWithEth";
 import { smartContractWalletRouter } from "./smartContractWallet";
 import { tokenRouter } from "./token";
 import { userRouter } from "./user";
+import { walletTransactionsRouter } from "./walletTransactions";
 import { webAuthnRouter } from "./webAuthn";
 
 export const appRouter = router({
@@ -15,6 +16,7 @@ export const appRouter = router({
   gasRefund: gasRefundRouter,
   smartContractWallet: smartContractWalletRouter,
   token: tokenRouter,
+  walletTransactions: walletTransactionsRouter,
 });
 
 // export type definition of API
